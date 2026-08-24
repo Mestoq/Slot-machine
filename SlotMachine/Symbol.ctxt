@@ -1,0 +1,23 @@
+#BlueJ class context
+#Sun Aug 23 20:48:34 COT 2026
+comment0.target=Symbol
+comment1.target=Symbol()
+comment10.params=newColor
+comment10.target=void changeColor(java.lang.String)
+comment11.params=distance
+comment11.target=void moveHorizontal(int)
+comment12.params=distance
+comment12.target=void moveVertical(int)
+comment13.target=void draw()
+comment14.target=void erase()
+comment2.params=symbol color
+comment2.target=Symbol(java.lang.String, java.lang.String)
+comment3.target=java.lang.String getSymbol()
+comment4.target=java.lang.String getColor()
+comment5.params=x y
+comment5.target=void setPosition(int, int)
+comment6.target=int getXPosition()
+comment7.target=int getYPosition()
+comment8.target=void makeVisible()
+comment9.target=void makeInvisible()
+numComments=15
