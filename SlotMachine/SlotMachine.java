@@ -1,266 +1,244 @@
 import java.util.*;
 import javax.swing.*;
 
-
+/**
+ * A slot machine simulator.
+ * Manages wheels, symbols, spinning, and jackpot detection.
+ * Can operate in visible mode (graphical) or invisible mode (logic only).
+ * 
+ * @author Slot Machine Team
+ * @version 1.0
+ */
 public class SlotMachine {
-    
-    private ArrayList<Wheel> wheels;
-    private HashMap<String, Symbol> symbols;
-    private Canvas canvas;                 
-    private boolean visible;                
-    private boolean isJackpot;               
-    private String lastMessage;
+    private List<Wheel> wheels;
+    private Symbol winningConfiguration;
+    private boolean isVisible;
+    private Canvas canvas;
 
+    /**
+     * Create a new slot machine with the default configuration.
+     * Initializes 3 empty wheels and no winning configuration.
+     */
     public SlotMachine() {
-        this.wheels = new ArrayList<Wheel>();
-        this.symbols = new HashMap<String, Symbol>();
-        this.canvas = Canvas.getCanvas();
-        this.visible = false;
-        this.isJackpot = false;
-        this.lastMessage = "";
+        this.wheels = new ArrayList<>();
+        this.winningConfiguration = null;
+        this.isVisible = false;
+        this.canvas = null;
+        
+        // Initialize with 3 empty wheels
+        addWheel(new Wheel(1));
+        addWheel(new Wheel(2));
+        addWheel(new Wheel(3));
     }
-    
 
-    public void addWheel(int pos) {
-
-        int index = pos - 1;
-        
- 
-        if (index < 0) {
-            index = 0;
+    /**
+     * Add a wheel to the slot machine.
+     * 
+     * @param wheel  The wheel to add
+     * @return true if added successfully
+     */
+    public boolean addWheel(Wheel wheel) {
+        if (wheel == null) {
+            return false;
         }
-        if (index > wheels.size()) {
-            index = wheels.size();
-        }
-        
- 
-        Wheel wheel = new Wheel(80 + (index * 120), 100);
-        wheels.add(index, wheel);
-        
- 
-        if (visible) {
-            wheel.makeVisible();
-        }
+        wheels.add(wheel);
+        return true;
     }
-    
 
-    public void delWheel(int pos) {
- 
-        int index = pos - 1;
- 
+    /**
+     * Remove a wheel at the given index.
+     * 
+     * @param index  The index of the wheel to remove (0-based)
+     * @return true if removed successfully, false if index is invalid
+     */
+    public boolean removeWheel(int index) {
         if (index < 0 || index >= wheels.size()) {
-            showMessage("Invalid wheel position: " + pos);
-            return;
+            showErrorMessage("Invalid wheel index: " + index);
+            return false;
         }
-        
-        Wheel wheel = wheels.get(index);
-        wheel.makeInvisible();
         wheels.remove(index);
+        return true;
     }
-    
 
-    public void addSymbol(int pos, String color, String symbol) {
-
-        Symbol sym = new Symbol(symbol, color);
-        
-  
-        symbols.put(symbol + "_" + color, sym);
-        
-  
-        if (pos < 1 || pos > wheels.size()) {
-            showMessage("Invalid wheel position: " + pos);
-            return;
+    /**
+     * Add a symbol to the wheel at the given index.
+     * 
+     * @param wheelIndex  The index of the wheel
+     * @param symbol      The symbol to add
+     * @return true if added successfully
+     */
+    public boolean addSymbol(int wheelIndex, Symbol symbol) {
+        if (wheelIndex < 0 || wheelIndex >= wheels.size()) {
+            showErrorMessage("Invalid wheel index: " + wheelIndex);
+            return false;
         }
-        
-        Wheel wheel = wheels.get(pos - 1);
-        wheel.addSymbol(wheel.getSymbols().size() + 1, sym);
+        if (symbol == null) {
+            showErrorMessage("Symbol cannot be null");
+            return false;
+        }
+        return wheels.get(wheelIndex).addSymbol(symbol);
     }
-    
 
-    public void delSymbol(String symbol) {
- 
-        boolean found = false;
-        
+    /**
+     * Remove a symbol from the wheel at the given indices.
+     * 
+     * @param wheelIndex   The index of the wheel
+     * @param symbolIndex  The index of the symbol in the wheel
+     * @return true if removed successfully
+     */
+    public boolean removeSymbol(int wheelIndex, int symbolIndex) {
+        if (wheelIndex < 0 || wheelIndex >= wheels.size()) {
+            showErrorMessage("Invalid wheel index: " + wheelIndex);
+            return false;
+        }
+        return wheels.get(wheelIndex).removeSymbol(symbolIndex);
+    }
+
+    /**
+     * Spin all wheels in the machine.
+     * Each wheel selects a random symbol.
+     * 
+     * @return true if spin was successful (all wheels have at least 1 symbol)
+     */
+    public boolean spin() {
         for (Wheel wheel : wheels) {
-            ArrayList<Symbol> wheelSymbols = wheel.getSymbols();
-            for (Symbol s : wheelSymbols) {
-                if (s.getSymbol().equals(symbol)) {
-                    wheel.delSymbol(s);
-                    found = true;
-                    break;
-                }
+            if (wheel.getSymbolCount() == 0) {
+                showErrorMessage("Cannot spin: wheel " + wheel.getWheelNumber() + 
+                               " has no symbols");
+                return false;
             }
+            wheel.spin();
         }
-        
-        if (!found) {
-            showMessage("Symbol not found: " + symbol);
-        }
+        return true;
     }
-    
 
-    public void spin(int wheelPos) {
+    /**
+     * Get a string representation of the current symbols on all wheels.
+     * 
+     * @return A formatted string showing each wheel's current symbol
+     */
+    public String consultSymbols() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Slot Machine Status:\n");
+        for (Wheel wheel : wheels) {
+            sb.append(wheel.toString()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Check if the current configuration is a jackpot.
+     * A jackpot occurs when all wheels show the same symbol.
+     * 
+     * @return true if all wheels have the same symbol, false otherwise
+     */
+    public boolean checkJackpot() {
         if (wheels.isEmpty()) {
-            showMessage("No wheels in the machine");
+            return false;
+        }
+        Symbol firstSymbol = wheels.get(0).getCurrentSymbol();
+        if (firstSymbol == null) {
+            return false;
+        }
+        for (Wheel wheel : wheels) {
+            Symbol current = wheel.getCurrentSymbol();
+            if (current == null || !current.getName().equals(firstSymbol.getName())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Make the slot machine visible.
+     * Initializes the canvas and displays the machine graphically.
+     */
+    public void makeVisible() {
+        if (isVisible) {
             return;
         }
-        
-        if (wheelPos == 0) {
-            for (Wheel wheel : wheels) {
-                wheel.spin();
-            }
-        } else if (wheelPos >= 1 && wheelPos <= wheels.size()) {
- 
-            wheels.get(wheelPos - 1).spin();
-        } else {
-            showMessage("Invalid wheel position: " + wheelPos);
-        }
-        
- 
-        updateJackpotStatus();
-    }
-    
-
-    public void spin() {
-        spin(0);
-    }
-    
-
-    public String[] symbols() {
-        Set<String> distinctSymbols = new HashSet<String>();
-        
-        for (Wheel wheel : wheels) {
-            for (Symbol sym : wheel.getSymbols()) {
-                distinctSymbols.add(sym.getSymbol());
-            }
-        }
-        
-        String[] result = new String[distinctSymbols.size()];
-        return distinctSymbols.toArray(result);
-    }
-    
-
-    public int distinctSymbols() {
-        return symbols().length;
-    }
-    
-
-    public String[] configuration() {
-        String[] config = new String[wheels.size()];
-        
-        for (int i = 0; i < wheels.size(); i++) {
-            Symbol currentSymbol = wheels.get(i).getCurrentSymbol();
-            if (currentSymbol != null) {
-                config[i] = currentSymbol.getColor();
-            } else {
-                config[i] = "none";
-            }
-        }
-        
-        return config;
-    }
-    
-
-    public boolean isJackpot() {
-        return isJackpot;
-    }
-    
-
-    public void makeVisible() {
-        visible = true;
-        canvas.setVisible(true);
-        
-      
+        isVisible = true;
+        canvas = Canvas.getCanvas();
         for (Wheel wheel : wheels) {
             wheel.makeVisible();
         }
     }
 
+    /**
+     * Make the slot machine invisible.
+     * Hides all visual elements but preserves internal state.
+     */
     public void makeInvisible() {
-        visible = false;
+        if (!isVisible) {
+            return;
+        }
+        isVisible = false;
         for (Wheel wheel : wheels) {
             wheel.makeInvisible();
         }
     }
-    
 
-    public void exit() {
-        makeInvisible();
-        System.exit(0);
-    }
-    
-    public boolean ok() {
-        return lastMessage.isEmpty();
-    }
-    
-
-    public void placeSymbol(int wheelPos, int symbolPos, Symbol symbol) {
-        if (wheelPos < 1 || wheelPos > wheels.size()) {
-            showMessage("Invalid wheel position: " + wheelPos);
-            return;
-        }
-        
-        Wheel wheel = wheels.get(wheelPos - 1);
-        wheel.addSymbol(symbolPos, symbol);
+    /**
+     * Check if the machine is currently visible.
+     * 
+     * @return true if visible, false otherwise
+     */
+    public boolean isVisible() {
+        return isVisible;
     }
 
+    /**
+     * Get the number of wheels in this machine.
+     * 
+     * @return The wheel count
+     */
     public int getWheelCount() {
         return wheels.size();
     }
-    
 
-    public Wheel getWheel(int pos) {
-        if (pos < 1 || pos > wheels.size()) {
+    /**
+     * Get a wheel at the given index.
+     * 
+     * @param index  The wheel index
+     * @return The wheel, or null if index is invalid
+     */
+    public Wheel getWheel(int index) {
+        if (index < 0 || index >= wheels.size()) {
             return null;
         }
-        return wheels.get(pos - 1);
+        return wheels.get(index);
     }
-    
 
-    public boolean isVisible() {
-        return visible;
+    /**
+     * Terminate the slot machine simulator.
+     * Cleans up resources and exits.
+     */
+    public void exit() {
+        makeInvisible();
+        System.out.println("Slot Machine Simulator terminated.");
     }
-    
 
-    private void updateJackpotStatus() {
-        if (wheels.isEmpty()) {
-            isJackpot = false;
-            return;
-        }
-        
-        String[] config = configuration();
-        String firstColor = config[0];
-        
-        if (firstColor.equals("none")) {
-            isJackpot = false;
-            return;
-        }
-
-        for (int i = 1; i < config.length; i++) {
-            if (!config[i].equals(firstColor)) {
-                isJackpot = false;
-                return;
-            }
-        }
-        
-        isJackpot = true;
-    }
-    
-
-    private void showMessage(String message) {
-        this.lastMessage = message;
-        
-        if (visible) {
-            JOptionPane.showMessageDialog(
-                null,
-                message,
-                "Slot Machine",
-                JOptionPane.INFORMATION_MESSAGE
-            );
+    /**
+     * Show an error message in a JOptionPane dialog.
+     * Only displays if the machine is visible.
+     * 
+     * @param message  The error message to display
+     */
+    private void showErrorMessage(String message) {
+        if (isVisible) {
+            JOptionPane.showMessageDialog(null, message, "Error", 
+                                        JOptionPane.ERROR_MESSAGE);
         }
     }
-    
 
-    public String getLastMessage() {
-        return lastMessage;
+    /**
+     * Return a string representation of the machine.
+     * 
+     * @return A string with machine status
+     */
+    @Override
+    public String toString() {
+        return "SlotMachine with " + wheels.size() + " wheels " + 
+               (isVisible ? "[VISIBLE]" : "[INVISIBLE]");
     }
 }

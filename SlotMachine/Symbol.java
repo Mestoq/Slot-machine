@@ -1,95 +1,85 @@
 import java.awt.*;
 
+/**
+ * A symbol that can be displayed on a wheel in the slot machine.
+ * Represents a single symbol (circle) with a color.
+ * Symbols are immutable once created (name and color don't change).
+ * 
+ * @author Slot Machine Team
+ * @version 1.0
+ */
 public class Symbol {
-    
-    private String symbol;        
-    private String color;        
-    private Shape shape;          
-    private boolean isVisible;   
-    private int xPosition;        
-    private int yPosition;      
-    
-    public Symbol() {
-        this("S", "red");
-    }
-    
-    public Symbol(String symbol, String color) {
-        this.symbol = symbol;
+    private String name;
+    private String color;
+    private Circle visual;
+    private boolean isVisible;
+
+    /**
+     * Create a new symbol with the given name and color.
+     * Symbols are red circles (color may be overridden, but default is "red").
+     * 
+     * @param name    The symbol's identifier (e.g., "diamond", "heart", "star")
+     * @param color   The symbol's color (used for rendering)
+     */
+    public Symbol(String name, String color) {
+        this.name = name;
         this.color = color;
-        this.xPosition = 0;
-        this.yPosition = 0;
-        this.isVisible = false;     
-        this.shape = new java.awt.Rectangle(0, 0, 50, 50);
-    }
-    
-    public String getSymbol() {
-        return this.symbol;
+        this.visual = new Circle();
+        this.visual.changeColor(color);
+        this.isVisible = false;
     }
 
+    /**
+     * Get the symbol's name.
+     * 
+     * @return The symbol's name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Get the symbol's color.
+     * 
+     * @return The symbol's color string
+     */
     public String getColor() {
-        return this.color;
+        return color;
     }
-    
-    public void setPosition(int x, int y) {
-        erase();
-        this.xPosition = x;
-        this.yPosition = y;
-        draw();
-    }
-    
-    public int getXPosition() {
-        return this.xPosition;
-    }
-    
-    public int getYPosition() {
-        return this.yPosition;
-    }
-    
+
+    /**
+     * Make this symbol visible on the canvas.
+     * The symbol is rendered at its default position (which depends on Canvas).
+     */
     public void makeVisible() {
         isVisible = true;
-        draw();
+        visual.makeVisible();
     }
-    
 
+    /**
+     * Make this symbol invisible on the canvas.
+     */
     public void makeInvisible() {
-        erase();
         isVisible = false;
-    }
-    
-
-    public void changeColor(String newColor) {
-        this.color = newColor;
-        draw();
+        visual.makeInvisible();
     }
 
-    public void moveHorizontal(int distance) {
-        erase();
-        this.xPosition += distance;
-        draw();
+    /**
+     * Check if this symbol is currently visible.
+     * 
+     * @return true if visible, false otherwise
+     */
+    public boolean isVisible() {
+        return isVisible;
     }
 
-    public void moveVertical(int distance) {
-        erase();
-        this.yPosition += distance;
-        draw();
-    }
-
-    private void draw() {
-        if (isVisible) {
-            Canvas canvas = Canvas.getCanvas();
-            java.awt.Rectangle awtRect = new java.awt.Rectangle(
-                xPosition, yPosition, 50, 50
-            );
-            canvas.draw(this, color, awtRect);
-            canvas.wait(10);
-        }
-    }
-    
-
-    private void erase() {
-        if (isVisible) {
-            Canvas canvas = Canvas.getCanvas();
-            canvas.erase(this);
-        }
+    /**
+     * Return a string representation of this symbol.
+     * 
+     * @return A string containing the symbol's name and color
+     */
+    @Override
+    public String toString() {
+        return name + " (" + color + ")";
     }
 }
