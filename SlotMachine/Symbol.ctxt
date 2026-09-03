@@ -1,23 +1,23 @@
 #BlueJ class context
-#Tue Aug 25 18:57:15 COT 2026
+#Thu Sep 03 14:36:09 COT 2026
 comment0.target=Symbol
-comment1.target=Symbol()
-comment10.params=newColor
-comment10.target=void changeColor(java.lang.String)
-comment11.params=distance
-comment11.target=void moveHorizontal(int)
-comment12.params=distance
-comment12.target=void moveVertical(int)
-comment13.target=void draw()
-comment14.target=void erase()
-comment2.params=symbol color
-comment2.target=Symbol(java.lang.String, java.lang.String)
-comment3.target=java.lang.String getSymbol()
-comment4.target=java.lang.String getColor()
-comment5.params=x y
-comment5.target=void setPosition(int, int)
-comment6.target=int getXPosition()
-comment7.target=int getYPosition()
-comment8.target=void makeVisible()
-comment9.target=void makeInvisible()
-numComments=15
+comment0.text=\r\n A symbol that can be displayed on a wheel in the slot machine.\r\n Represents a single symbol (circle) with a name and color.\r\n \r\n @author Slot Machine Team\r\n @version 2.0\r\n
+comment1.params=name color
+comment1.target=Symbol(java.lang.String, java.lang.String)
+comment1.text=\r\n Create a new symbol with the given name and color.\r\n \r\n @param name    The symbol's identifier (e.g., "diamond", "heart", "star")\r\n @param color   The symbol's color (used for rendering)\r\n
+comment2.target=java.lang.String getName()
+comment2.text=\r\n Get the symbol's name.\r\n \r\n @return The symbol's name\r\n
+comment3.target=java.lang.String getColor()
+comment3.text=\r\n Get the symbol's color.\r\n \r\n @return The symbol's color string\r\n
+comment4.params=x y
+comment4.target=void setPosition(int, int)
+comment4.text=\r\n Set the absolute position of this symbol on the canvas.\r\n Moves the underlying circle to the exact (x, y) coordinates.\r\n \r\n @param x  The target x coordinate\r\n @param y  The target y coordinate\r\n
+comment5.target=void makeVisible()
+comment5.text=\r\n Make this symbol visible on the canvas.\r\n
+comment6.target=void makeInvisible()
+comment6.text=\r\n Make this symbol invisible on the canvas.\r\n
+comment7.target=boolean isVisible()
+comment7.text=\r\n Check if this symbol is currently visible.\r\n \r\n @return true if visible, false otherwise\r\n
+comment8.target=java.lang.String toString()
+comment8.text=\r\n Return a string representation of this symbol.\r\n \r\n @return A string containing the symbol's name and color\r\n
+numComments=9

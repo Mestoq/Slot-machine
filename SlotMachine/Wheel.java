@@ -2,19 +2,27 @@ import java.util.*;
 
 /**
  * A wheel in the slot machine that contains and displays symbols.
- * Each wheel can hold multiple symbols and displays one at a time.
+ * Each wheel draws itself as a rectangle with its current symbol
+ * (circle) centered inside.
  * 
  * @author Slot Machine Team
- * @version 1.0
+ * @version 2.0
  */
 public class Wheel {
-    private List<Symbol> symbols;
+    private static List<Symbol> symbols;
     private Symbol currentSymbol;
     private int wheelNumber;
     private boolean isVisible;
 
+    private int xPosition;
+    private int yPosition;
+    private static final int SIZE = 90;
+    private static final int MARGIN = 20;
+
     /**
      * Create a new wheel with an empty list of symbols.
+     * Position on the canvas is calculated automatically from the
+     * wheel number.
      * 
      * @param wheelNumber  The wheel's position number (e.g., 1, 2, 3)
      */
@@ -23,6 +31,8 @@ public class Wheel {
         this.currentSymbol = null;
         this.wheelNumber = wheelNumber;
         this.isVisible = false;
+        this.xPosition = 120 + ((wheelNumber - 1) * (SIZE + 20));
+        this.yPosition = SlotMachine.yPosition * 2;
     }
 
     /**
@@ -48,6 +58,9 @@ public class Wheel {
         symbols.add(symbol);
         if (currentSymbol == null) {
             currentSymbol = symbol;
+            if (isVisible) {
+                draw();
+            }
         }
         return true;
     }
@@ -65,7 +78,13 @@ public class Wheel {
         }
         Symbol removed = symbols.remove(index);
         if (removed == currentSymbol) {
+            if (isVisible) {
+                removed.makeInvisible();
+            }
             currentSymbol = symbols.isEmpty() ? null : symbols.get(0);
+            if (isVisible && currentSymbol != null) {
+                draw();
+            }
         }
         return true;
     }
@@ -81,6 +100,7 @@ public class Wheel {
 
     /**
      * Spin the wheel: randomly select a symbol from the wheel's symbols.
+     * If visible, hides the previous symbol and shows the new one.
      * 
      * @return The newly selected symbol, or null if no symbols exist
      */
@@ -88,8 +108,14 @@ public class Wheel {
         if (symbols.isEmpty()) {
             return null;
         }
+        if (isVisible && currentSymbol != null) {
+            currentSymbol.makeInvisible();
+        }
         int randomIndex = (int) (Math.random() * symbols.size());
         currentSymbol = symbols.get(randomIndex);
+        if (isVisible) {
+            draw();
+        }
         return currentSymbol;
     }
 
@@ -117,24 +143,20 @@ public class Wheel {
 
     /**
      * Make this wheel visible.
-     * This makes the current symbol visible.
+     * Draws the wheel's rectangle and its current symbol.
      */
     public void makeVisible() {
         isVisible = true;
-        if (currentSymbol != null) {
-            currentSymbol.makeVisible();
-        }
+        draw();
     }
 
     /**
      * Make this wheel invisible.
-     * This makes all symbols invisible.
+     * Erases the wheel's rectangle and hides all symbols.
      */
     public void makeInvisible() {
+        erase();
         isVisible = false;
-        for (Symbol symbol : symbols) {
-            symbol.makeInvisible();
-        }
     }
 
     /**
@@ -146,6 +168,38 @@ public class Wheel {
         return isVisible;
     }
 
+    /*
+     * Draw the wheel's rectangle and its current symbol on screen.
+     */
+    private void draw() {
+        if (isVisible) {
+            Canvas canvas = Canvas.getCanvas();
+            canvas.draw(this, "gray",
+                new java.awt.Rectangle(xPosition, yPosition, SIZE, SIZE));
+            canvas.wait(10);
+
+            if (currentSymbol != null) {
+                int symbolX = xPosition + MARGIN;
+                int symbolY = yPosition + MARGIN;
+                currentSymbol.setPosition(symbolX, symbolY);
+                currentSymbol.makeVisible();
+            }
+        }
+    }
+
+    /*
+     * Erase the wheel's rectangle and hide its current symbol.
+     */
+    private void erase() {
+        if (isVisible) {
+            Canvas canvas = Canvas.getCanvas();
+            canvas.erase(this);
+            if (currentSymbol != null) {
+                currentSymbol.makeInvisible();
+            }
+        }
+    }
+
     /**
      * Return a string representation of this wheel.
      * 
@@ -153,7 +207,7 @@ public class Wheel {
      */
     @Override
     public String toString() {
-        return "Wheel " + wheelNumber + ": " + 
+        return "Wheel " + wheelNumber + ": " +
                (currentSymbol != null ? currentSymbol.toString() : "empty");
     }
 }

@@ -2,11 +2,10 @@ import java.awt.*;
 
 /**
  * A symbol that can be displayed on a wheel in the slot machine.
- * Represents a single symbol (circle) with a color.
- * Symbols are immutable once created (name and color don't change).
+ * Represents a single symbol (circle) with a name and color.
  * 
  * @author Slot Machine Team
- * @version 1.0
+ * @version 2.0
  */
 public class Symbol {
     private String name;
@@ -14,9 +13,12 @@ public class Symbol {
     private Circle visual;
     private boolean isVisible;
 
+    private int xPosition;
+    private int yPosition;
+    private static final int DIAMETER = 40;
+
     /**
      * Create a new symbol with the given name and color.
-     * Symbols are red circles (color may be overridden, but default is "red").
      * 
      * @param name    The symbol's identifier (e.g., "diamond", "heart", "star")
      * @param color   The symbol's color (used for rendering)
@@ -25,8 +27,11 @@ public class Symbol {
         this.name = name;
         this.color = color;
         this.visual = new Circle();
+        this.visual.changeSize(DIAMETER);
         this.visual.changeColor(color);
         this.isVisible = false;
+        this.xPosition = 20;   // Default Circle position
+        this.yPosition = 15;   // Default Circle position
     }
 
     /**
@@ -48,8 +53,23 @@ public class Symbol {
     }
 
     /**
+     * Set the absolute position of this symbol on the canvas.
+     * Moves the underlying circle to the exact (x, y) coordinates.
+     * 
+     * @param x  The target x coordinate
+     * @param y  The target y coordinate
+     */
+    public void setPosition(int x, int y) {
+        int deltaX = x - xPosition;
+        int deltaY = y - yPosition;
+        visual.moveHorizontal(deltaX);
+        visual.moveVertical(deltaY);
+        xPosition = x;
+        yPosition = y;
+    }
+
+    /**
      * Make this symbol visible on the canvas.
-     * The symbol is rendered at its default position (which depends on Canvas).
      */
     public void makeVisible() {
         isVisible = true;

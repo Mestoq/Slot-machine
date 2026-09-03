@@ -1,47 +1,58 @@
 import java.util.*;
 import javax.swing.*;
+import java.awt.Dimension;
 
-/**
- * A slot machine simulator.
- * Manages wheels, symbols, spinning, and jackpot detection.
- * Can operate in visible mode (graphical) or invisible mode (logic only).
- * 
- * @author Slot Machine Team
- * @version 1.0
- */
+
+
 public class SlotMachine {
     private List<Wheel> wheels;
-    private Symbol winningConfiguration;
     private boolean isVisible;
     private Canvas canvas;
 
+    private Rectangle mainContainer;
+    private int xPosition;
+    public static int yPosition;
+    private static  int width = 400;
+    private static final int HEIGHT = 300;
+
     /**
-     * Create a new slot machine with the default configuration.
-     * Initializes 3 empty wheels and no winning configuration.
+     * Create a new slot machine with 3 empty wheels.
      */
     public SlotMachine() {
         this.wheels = new ArrayList<>();
-        this.winningConfiguration = null;
         this.isVisible = false;
         this.canvas = null;
-        
-        // Initialize with 3 empty wheels
-        addWheel(new Wheel(1));
-        addWheel(new Wheel(2));
-        addWheel(new Wheel(3));
+        this.mainContainer = null;
+        this.xPosition = 100;
+        this.yPosition = 100;
+
+        wheels.add(new Wheel(1));
+        wheels.add(new Wheel(2));
+        wheels.add(new Wheel(3));
     }
 
     /**
-     * Add a wheel to the slot machine.
+     * Add a new wheel to the machine at the given position number.
      * 
-     * @param wheel  The wheel to add
-     * @return true if added successfully
+     * @param wheelNumber  The position number for the new wheel
+     * @return true if added successfully, false if that number already exists
      */
-    public boolean addWheel(Wheel wheel) {
-        if (wheel == null) {
-            return false;
+    public boolean addWheel(int wheelNumber) {
+        for (Wheel w : wheels) {
+            if (w.getWheelNumber() == wheelNumber) {
+                showErrorMessage("Wheel " + wheelNumber + " already exists");
+                return false;
+            }
         }
+        Wheel wheel = new Wheel(wheelNumber);
         wheels.add(wheel);
+        mainContainer.changeSize(HEIGHT, width+90);
+        canvas.setCanvasSize( width+30, HEIGHT);
+        draw();
+        
+        if (isVisible) {
+            wheel.makeVisible();
+        }
         return true;
     }
 
@@ -55,6 +66,10 @@ public class SlotMachine {
         if (index < 0 || index >= wheels.size()) {
             showErrorMessage("Invalid wheel index: " + index);
             return false;
+        }
+        Wheel wheel = wheels.get(index);
+        if (isVisible) {
+            wheel.makeInvisible();
         }
         wheels.remove(index);
         return true;
@@ -103,11 +118,16 @@ public class SlotMachine {
     public boolean spin() {
         for (Wheel wheel : wheels) {
             if (wheel.getSymbolCount() == 0) {
-                showErrorMessage("Cannot spin: wheel " + wheel.getWheelNumber() + 
-                               " has no symbols");
+                showErrorMessage("Cannot spin: wheel " + wheel.getWheelNumber() +
+                        " has no symbols");
                 return false;
             }
+        }
+        for (Wheel wheel : wheels) {
             wheel.spin();
+        }
+        if (isVisible) {
+            updateJackpotIndicator();
         }
         return true;
     }
@@ -151,7 +171,7 @@ public class SlotMachine {
 
     /**
      * Make the slot machine visible.
-     * Initializes the canvas and displays the machine graphically.
+     * Draws all wheels first, then the main container on top.
      */
     public void makeVisible() {
         if (isVisible) {
@@ -159,9 +179,7 @@ public class SlotMachine {
         }
         isVisible = true;
         canvas = Canvas.getCanvas();
-        for (Wheel wheel : wheels) {
-            wheel.makeVisible();
-        }
+        draw();
     }
 
     /**
@@ -173,9 +191,7 @@ public class SlotMachine {
             return;
         }
         isVisible = false;
-        for (Wheel wheel : wheels) {
-            wheel.makeInvisible();
-        }
+        erase();
     }
 
     /**
@@ -183,7 +199,7 @@ public class SlotMachine {
      * 
      * @return true if visible, false otherwise
      */
-    public boolean isVisible() {
+    public boolean isVisibleNow() {
         return isVisible;
     }
 
@@ -218,6 +234,54 @@ public class SlotMachine {
         System.out.println("Slot Machine Simulator terminated.");
     }
 
+    /*
+     * Draw all wheels, then the main container rectangle on top,
+     * with color reflecting jackpot state.
+     */
+    private void draw() {
+        if (isVisible) {
+            // Draw container FIRST (background), then wheels ON TOP,
+            // otherwise the container paints over the wheels/symbols.
+            if (mainContainer == null) {
+                // Rectangle's default position is (70, 15); move it once
+                // to our target (xPosition, yPosition) using the delta.
+                mainContainer = new Rectangle();
+                mainContainer.changeSize(HEIGHT, width);
+                mainContainer.moveHorizontal(xPosition - 70);
+                mainContainer.moveVertical(yPosition - 15);
+            }
+            mainContainer.changeColor(checkJackpot() ? "red" : "blue");
+            mainContainer.makeVisible();
+
+            for (Wheel wheel : wheels) {
+                wheel.makeVisible();
+
+            }
+        }
+    }
+
+    /*
+     * Update the main container's color based on jackpot state
+     * and redraw it (called after a spin, while visible).
+     */
+    private void updateJackpotIndicator() {
+        if (mainContainer != null) {
+            mainContainer.changeColor(checkJackpot() ? "red" : "blue");
+        }
+    }
+
+    /*
+     * Erase the main container and all wheels from the canvas.
+     */
+    private void erase() {
+        for (Wheel wheel : wheels) {
+            wheel.makeInvisible();
+        }
+        if (mainContainer != null) {
+            mainContainer.makeInvisible();
+        }
+    }
+
     /**
      * Show an error message in a JOptionPane dialog.
      * Only displays if the machine is visible.
@@ -226,8 +290,8 @@ public class SlotMachine {
      */
     private void showErrorMessage(String message) {
         if (isVisible) {
-            JOptionPane.showMessageDialog(null, message, "Error", 
-                                        JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, message, "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -238,7 +302,7 @@ public class SlotMachine {
      */
     @Override
     public String toString() {
-        return "SlotMachine with " + wheels.size() + " wheels " + 
+        return "SlotMachine with " + wheels.size() + " wheels " +
                (isVisible ? "[VISIBLE]" : "[INVISIBLE]");
     }
 }
