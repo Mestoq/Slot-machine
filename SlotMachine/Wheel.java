@@ -32,7 +32,7 @@ public class Wheel {
         this.wheelNumber = wheelNumber;
         this.isVisible = false;
         this.xPosition = 120 + ((wheelNumber - 1) * (SIZE + 20));
-        this.yPosition = SlotMachine.yPosition * 2;
+        this.yPosition = 120;
     }
 
     /**
@@ -209,5 +209,14 @@ public class Wheel {
     public String toString() {
         return "Wheel " + wheelNumber + ": " +
                (currentSymbol != null ? currentSymbol.toString() : "empty");
+    }
+    
+    public void setPosition(int x, int y) {
+        this.xPosition = x;
+        this.yPosition = y;
+    }
+    public void setWheelIndex(int newIndex) {
+        this.wheelNumber = newIndex;
+        this.xPosition = 120 + (newIndex * 110);
     }
 }

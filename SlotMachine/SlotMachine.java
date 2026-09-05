@@ -12,8 +12,8 @@ public class SlotMachine {
     private Rectangle mainContainer;
     private int xPosition;
     public static int yPosition;
-    private static  int width = 400;
-    private static final int HEIGHT = 300;
+    private static  int width = 500;
+    private static final int HEIGHT = 200;
 
     /**
      * Create a new slot machine with 3 empty wheels.
@@ -39,8 +39,8 @@ public class SlotMachine {
      */
     public boolean addWheel(int wheelNumber) {
         for (Wheel w : wheels) {
-            if (w.getWheelNumber() == wheelNumber) {
-                showErrorMessage("Wheel " + wheelNumber + " already exists");
+            if (w.getWheelNumber() == wheelNumber||wheelNumber==0) {
+                showErrorMessage("Wheel " + wheelNumber + " already exists or is invalid");
                 return false;
             }
         }
@@ -62,17 +62,36 @@ public class SlotMachine {
      * @param index  The index of the wheel to remove (0-based)
      * @return true if removed successfully, false if index is invalid
      */
-    public boolean removeWheel(int index) {
-        if (index < 0 || index >= wheels.size()) {
-            showErrorMessage("Invalid wheel index: " + index);
-            return false;
+    public boolean removeWheel(int wheelNumber) {
+        for (int i = 0; i < wheels.size(); i++) {
+            if (wheels.get(i).getWheelNumber() == wheelNumber) {
+                Wheel wheel = wheels.get(i);
+                if (isVisible) {
+                    wheel.makeInvisible();
+                }
+                wheels.remove(i);
+                for (int j = 0; j < wheels.size(); j++) {
+                    wheels.get(j).setWheelIndex(j + 1);
+                }
+                if (isVisible) {
+                    repositionWheels();
+                }
+                mainContainer.changeSize(HEIGHT, width-50);
+                canvas.setCanvasSize( width-30, HEIGHT);
+                draw();
+                return true;
+            }
         }
-        Wheel wheel = wheels.get(index);
-        if (isVisible) {
-            wheel.makeInvisible();
+        showErrorMessage("Wheel " + wheelNumber + " not found");
+        return false;
+    }
+    
+    
+    private void repositionWheels() {
+        for (Wheel wheel : wheels) {
+            int targetX = 120 + ((wheel.getWheelNumber() - 1) * 110);
+            wheel.setPosition(targetX, 120);
         }
-        wheels.remove(index);
-        return true;
     }
 
     /**
