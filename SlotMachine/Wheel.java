@@ -1,15 +1,11 @@
 import java.util.*;
 
 /**
- * A wheel in the slot machine that contains and displays symbols.
- * Each wheel draws itself as a rectangle with its current symbol
- * (circle) centered inside.
- * 
- * @author Slot Machine Team
- * @version 2.0
+ * Una rueda de la máquina. Guarda sus propios símbolos y muestra
+ * cuál de ellos está activo en pantalla.
  */
 public class Wheel {
-    private static List<Symbol> symbols;
+    private List<Symbol> symbols;
     private Symbol currentSymbol;
     private int wheelNumber;
     private boolean isVisible;
@@ -19,157 +15,148 @@ public class Wheel {
     private static final int SIZE = 90;
     private static final int MARGIN = 20;
 
-    /**
-     * Create a new wheel with an empty list of symbols.
-     * Position on the canvas is calculated automatically from the
-     * wheel number.
-     * 
-     * @param wheelNumber  The wheel's position number (e.g., 1, 2, 3)
-     */
     public Wheel(int wheelNumber) {
         this.symbols = new ArrayList<>();
         this.currentSymbol = null;
         this.wheelNumber = wheelNumber;
         this.isVisible = false;
-        this.xPosition = 120 + ((wheelNumber - 1) * (SIZE + 20));
+        this.xPosition = 120 + ((wheelNumber - 1) * (SIZE + MARGIN));
         this.yPosition = 120;
     }
 
     /**
-     * Get the wheel's position number.
-     * 
-     * @return The wheel number
+     * Devuelve en qué número está esta rueda ahora mismo.
      */
-    public int getWheelNumber() {
-        return wheelNumber;
-    }
+    public int getWheelNumber() { return wheelNumber; }
 
     /**
-     * Add a symbol to this wheel.
-     * The first symbol added becomes the current symbol.
-     * 
-     * @param symbol  The symbol to add
-     * @return true if the symbol was added successfully
+     * Devuelve en qué posición horizontal está dibujada la rueda.
+     */
+    public int getXPosition() { return xPosition; }
+
+    /**
+     * Agrega un símbolo nuevo a esta rueda. Si es el primero que llega,
+     * se queda como el símbolo que se ve por ahora.
      */
     public boolean addSymbol(Symbol symbol) {
-        if (symbol == null) {
-            return false;
-        }
+        if (symbol == null) return false;
         symbols.add(symbol);
         if (currentSymbol == null) {
             currentSymbol = symbol;
-            if (isVisible) {
-                draw();
-            }
+            if (isVisible) draw();
         }
         return true;
     }
 
     /**
-     * Remove a symbol at the given index from this wheel.
-     * If the removed symbol was current, the next available symbol becomes current.
-     * 
-     * @param index  The index of the symbol to remove
-     * @return true if removal was successful, false if index is invalid
+     * Quita un símbolo de esta rueda. Si era el que se estaba mostrando,
+     * se elige otro para mostrar en su lugar (o ninguno si ya no quedan).
      */
-    public boolean removeSymbol(int index) {
-        if (index < 0 || index >= symbols.size()) {
-            return false;
-        }
-        Symbol removed = symbols.remove(index);
-        if (removed == currentSymbol) {
-            if (isVisible) {
-                removed.makeInvisible();
-            }
+    public boolean removeSymbol(Symbol symbol) {
+        boolean removed = symbols.remove(symbol);
+        if (removed && symbol == currentSymbol) {
+            if (isVisible) symbol.makeInvisible();
             currentSymbol = symbols.isEmpty() ? null : symbols.get(0);
-            if (isVisible && currentSymbol != null) {
-                draw();
-            }
+            if (isVisible && currentSymbol != null) draw();
         }
-        return true;
+        return removed;
     }
 
     /**
-     * Get the current symbol displayed on this wheel.
-     * 
-     * @return The current symbol, or null if no symbols exist
+     * Muestra cuál es el símbolo que esta rueda tiene en pantalla ahora.
      */
-    public Symbol getCurrentSymbol() {
-        return currentSymbol;
+    public Symbol getCurrentSymbol() { return currentSymbol; }
+
+    /**
+     * Dice cuántos símbolos tiene esta rueda guardados.
+     */
+    public int getSymbolCount() { return symbols.size(); }
+
+    /**
+     * Devuelve los símbolos que tiene esta rueda, en el orden en que
+     * se fueron agregando.
+     */
+    public List<Symbol> getSymbols() { return new ArrayList<>(symbols); }
+
+    /**
+     * Revisa si esta rueda ya tiene un símbolo de este color.
+     * Sirve para no repetir colores en la misma rueda.
+     */
+    public boolean hasColor(String color) {
+        for (Symbol s : symbols) {
+            if (s.getColor().equals(color)) return true;
+        }
+        return false;
     }
 
     /**
-     * Spin the wheel: randomly select a symbol from the wheel's symbols.
-     * If visible, hides the previous symbol and shows the new one.
-     * 
-     * @return The newly selected symbol, or null if no symbols exist
+     * Gira la rueda: elige un símbolo al azar entre los que tiene y lo
+     * deja mostrado.
      */
     public Symbol spin() {
-        if (symbols.isEmpty()) {
-            return null;
-        }
-        if (isVisible && currentSymbol != null) {
-            currentSymbol.makeInvisible();
-        }
-        int randomIndex = (int) (Math.random() * symbols.size());
-        currentSymbol = symbols.get(randomIndex);
-        if (isVisible) {
-            draw();
-        }
+        if (symbols.isEmpty()) return null;
+        if (isVisible && currentSymbol != null) currentSymbol.makeInvisible();
+        currentSymbol = symbols.get((int) (Math.random() * symbols.size()));
+        if (isVisible) draw();
         return currentSymbol;
     }
 
     /**
-     * Get the number of symbols in this wheel.
-     * 
-     * @return The count of symbols
+     * Pone como símbolo actual uno que ya tiene guardado esta rueda,
+     * buscándolo por color. No elige al azar como spin, tú decides cuál.
      */
-    public int getSymbolCount() {
-        return symbols.size();
-    }
-
-    /**
-     * Get a symbol at the given index.
-     * 
-     * @param index  The index of the symbol
-     * @return The symbol at that index, or null if index is invalid
-     */
-    public Symbol getSymbol(int index) {
-        if (index < 0 || index >= symbols.size()) {
-            return null;
+    public boolean placeSymbol(String color) {
+        for (Symbol s : symbols) {
+            if (s.getColor().equals(color)) {
+                if (isVisible && currentSymbol != null) currentSymbol.makeInvisible();
+                currentSymbol = s;
+                if (isVisible) draw();
+                return true;
+            }
         }
-        return symbols.get(index);
+        return false;
     }
 
     /**
-     * Make this wheel visible.
-     * Draws the wheel's rectangle and its current symbol.
+     * Hace que la rueda aparezca en el canvas.
      */
-    public void makeVisible() {
-        isVisible = true;
-        draw();
+    public void makeVisible() { isVisible = true; draw(); }
+
+    /**
+     * Hace que la rueda desaparezca del canvas.
+     */
+    public void makeInvisible() { erase(); isVisible = false; }
+
+    /**
+     * Dice si la rueda está visible en este momento.
+     */
+    public boolean isVisible() { return isVisible; }
+
+    /**
+     * Cambia la posición de la rueda en el canvas y la vuelve a dibujar
+     * si está visible.
+     */
+    public void setPosition(int x, int y) {
+        this.xPosition = x;
+        this.yPosition = y;
+        if (isVisible) draw();
     }
 
     /**
-     * Make this wheel invisible.
-     * Erases the wheel's rectangle and hides all symbols.
+     * Renumera esta rueda y su posición base (misma fórmula que el
+     * constructor). Propaga el nuevo número a todos sus símbolos, ya que
+     * cada símbolo depende de su rueda.
      */
-    public void makeInvisible() {
-        erase();
-        isVisible = false;
-    }
-
-    /**
-     * Check if this wheel is currently visible.
-     * 
-     * @return true if visible, false otherwise
-     */
-    public boolean isVisible() {
-        return isVisible;
+    public void setWheelIndex(int newIndex) {
+        this.wheelNumber = newIndex;
+        this.xPosition = 120 + ((newIndex - 1) * (SIZE + MARGIN));
+        for (Symbol s : symbols) {
+            s.setWheelIndex(newIndex);
+        }
     }
 
     /*
-     * Draw the wheel's rectangle and its current symbol on screen.
+     * Dibuja el cuadrado de la rueda y el símbolo que tiene puesto ahora.
      */
     private void draw() {
         if (isVisible) {
@@ -177,46 +164,27 @@ public class Wheel {
             canvas.draw(this, "gray",
                 new java.awt.Rectangle(xPosition, yPosition, SIZE, SIZE));
             canvas.wait(10);
-
             if (currentSymbol != null) {
-                int symbolX = xPosition + MARGIN;
-                int symbolY = yPosition + MARGIN;
-                currentSymbol.setPosition(symbolX, symbolY);
+                currentSymbol.setPosition(xPosition + MARGIN, yPosition + MARGIN);
                 currentSymbol.makeVisible();
             }
         }
     }
 
     /*
-     * Erase the wheel's rectangle and hide its current symbol.
+     * Borra la rueda y su símbolo del canvas.
      */
     private void erase() {
         if (isVisible) {
             Canvas canvas = Canvas.getCanvas();
             canvas.erase(this);
-            if (currentSymbol != null) {
-                currentSymbol.makeInvisible();
-            }
+            if (currentSymbol != null) currentSymbol.makeInvisible();
         }
     }
 
-    /**
-     * Return a string representation of this wheel.
-     * 
-     * @return A string showing the wheel number and current symbol
-     */
     @Override
     public String toString() {
         return "Wheel " + wheelNumber + ": " +
                (currentSymbol != null ? currentSymbol.toString() : "empty");
-    }
-    
-    public void setPosition(int x, int y) {
-        this.xPosition = x;
-        this.yPosition = y;
-    }
-    public void setWheelIndex(int newIndex) {
-        this.wheelNumber = newIndex;
-        this.xPosition = 120 + (newIndex * 110);
     }
 }
