@@ -56,7 +56,6 @@ public class SlotMachine {
 
         if (isVisible) {
             mainContainer.changeSize(HEIGHT, width + 90);
-            canvas.setCanvasSize(width + 30, HEIGHT);
             draw();
             wheel.makeVisible();
         }
@@ -77,7 +76,6 @@ public class SlotMachine {
                 if (isVisible) {
                     repositionWheels();
                     mainContainer.changeSize(HEIGHT, width - 50);
-                    canvas.setCanvasSize(width - 30, HEIGHT);
                     draw();
                 }
                 return result(true);
@@ -133,23 +131,23 @@ public class SlotMachine {
         return result(false);
     }
 
+    /**
+     * Gira todas las ruedas, ignorando las que están fijas (held).
+     */
     public boolean spin() {
         for (Wheel wheel : wheels) {
-            if (wheel.getSymbolCount() == 0) {
+            if (!wheel.isHeld() && wheel.getSymbolCount() == 0) {
                 showErrorMessage("Cannot spin: wheel " + wheel.getWheelNumber() +
                         " has no symbols");
                 return result(false);
             }
         }
         for (Wheel wheel : wheels) {
-            wheel.spin();
-        }
-        if (isVisible) {
-            updateJackpotIndicator();
-            for (Wheel wheel : wheels) {
-                wheel.makeVisible();
+            if (!wheel.isHeld()) {
+                wheel.spin();
             }
         }
+        if (isVisible) refreshActiveWheels();
         return result(true);
     }
 
@@ -161,12 +159,112 @@ public class SlotMachine {
                     return result(false);
                 }
                 w.spin();
-                if (isVisible) updateJackpotIndicator();
+                if (isVisible) refreshActiveWheels();
                 return result(true);
             }
         }
         showErrorMessage("Wheel " + wheelNumber + " not found");
         return result(false);
+    }
+
+    /**
+     * Intercambia el contenido lógico de dos ruedas (símbolos y símbolo
+     * actual), sin mover su posición en el canvas.
+     */
+    public boolean swapWheels(int wheelNumber1, int wheelNumber2) {
+        Wheel w1 = null, w2 = null;
+        for (Wheel w : wheels) {
+            if (w.getWheelNumber() == wheelNumber1) w1 = w;
+            if (w.getWheelNumber() == wheelNumber2) w2 = w;
+        }
+        if (w1 == null || w2 == null) {
+            showErrorMessage("One or both wheels not found");
+            return result(false);
+        }
+        w1.swapContentWith(w2);
+        return result(true);
+    }
+
+    /**
+     * Fija una rueda para que spin() no la mueva.
+     */
+    public boolean holdWheel(int wheelNumber) {
+        for (Wheel w : wheels) {
+            if (w.getWheelNumber() == wheelNumber) {
+                w.hold();
+                return result(true);
+            }
+        }
+        showErrorMessage("Wheel " + wheelNumber + " not found");
+        return result(false);
+    }
+
+    /**
+     * Suelta una rueda previamente fijada.
+     */
+    public boolean releaseWheel(int wheelNumber) {
+        for (Wheel w : wheels) {
+            if (w.getWheelNumber() == wheelNumber) {
+                w.release();
+                return result(true);
+            }
+        }
+        showErrorMessage("Wheel " + wheelNumber + " not found");
+        return result(false);
+    }
+
+    /**
+     * Rota una rueda específica un número de pasos. Si la máquina está
+     * visible, el movimiento se ve paso a paso.
+     */
+    public boolean rotate(int wheelNumber, int steps) {
+        for (Wheel w : wheels) {
+            if (w.getWheelNumber() == wheelNumber) {
+                if (w.getSymbolCount() == 0) {
+                    showErrorMessage("Cannot rotate: wheel " + wheelNumber + " has no symbols");
+                    return result(false);
+                }
+                w.rotate(steps);
+                if (isVisible) refreshActiveWheels();
+                return result(true);
+            }
+        }
+        showErrorMessage("Wheel " + wheelNumber + " not found");
+        return result(false);
+    }
+
+    /**
+     * Deja la máquina en la configuración dada (todo o nada): si algún
+     * color no existe en su rueda correspondiente, no se aplica ningún
+     * cambio.
+     * @param config colores separados por coma, en orden de número de rueda
+     */
+    public boolean setConfiguration(String config) {
+        String[] colors = config.split(",");
+        if (colors.length != wheels.size()) {
+            showErrorMessage("Configuration size does not match wheel count");
+            return result(false);
+        }
+
+        List<Wheel> sorted = new ArrayList<>(wheels);
+        sorted.sort((a, b) -> a.getWheelNumber() - b.getWheelNumber());
+
+        // Validación completa antes de aplicar nada (todo o nada)
+        for (int i = 0; i < colors.length; i++) {
+            Wheel w = sorted.get(i);
+            if (!w.hasColor(colors[i].trim())) {
+                showErrorMessage("Wheel " + w.getWheelNumber() +
+                        " has no " + colors[i].trim() + " symbol");
+                return result(false);
+            }
+        }
+
+        // Todo válido: se aplica
+        for (int i = 0; i < colors.length; i++) {
+            sorted.get(i).placeSymbol(colors[i].trim());
+        }
+        if (isVisible) refreshActiveWheels();
+        return result(true);
     }
 
     public String consultSymbols() {
@@ -290,6 +388,18 @@ public class SlotMachine {
             for (Wheel wheel : wheels) {
                 wheel.makeVisible();
             }
+        }
+    }
+
+    /*
+     * Actualiza el indicador de jackpot y asegura que las ruedas no
+     * fijas queden visibles tras una operación que cambia su contenido
+     * (spin, rotate, setConfiguration).
+     */
+    private void refreshActiveWheels() {
+        updateJackpotIndicator();
+        for (Wheel wheel : wheels) {
+            if (!wheel.isHeld()) wheel.makeVisible();
         }
     }
 

@@ -9,6 +9,8 @@ public class Wheel {
     private Symbol currentSymbol;
     private int wheelNumber;
     private boolean isVisible;
+    private boolean isHeld;
+    private int currentPositionIndex;
 
     private int xPosition;
     private int yPosition;
@@ -20,6 +22,8 @@ public class Wheel {
         this.currentSymbol = null;
         this.wheelNumber = wheelNumber;
         this.isVisible = false;
+        this.isHeld = false;
+        this.currentPositionIndex = 0;
         this.xPosition = 120 + ((wheelNumber - 1) * (SIZE + MARGIN));
         this.yPosition = 120;
     }
@@ -43,6 +47,7 @@ public class Wheel {
         symbols.add(symbol);
         if (currentSymbol == null) {
             currentSymbol = symbol;
+            currentPositionIndex = symbols.size() - 1;
             if (isVisible) draw();
         }
         return true;
@@ -57,6 +62,7 @@ public class Wheel {
         if (removed && symbol == currentSymbol) {
             if (isVisible) symbol.makeInvisible();
             currentSymbol = symbols.isEmpty() ? null : symbols.get(0);
+            currentPositionIndex = symbols.isEmpty() ? 0 : 0;
             if (isVisible && currentSymbol != null) draw();
         }
         return removed;
@@ -96,7 +102,8 @@ public class Wheel {
     public Symbol spin() {
         if (symbols.isEmpty()) return null;
         if (isVisible && currentSymbol != null) currentSymbol.makeInvisible();
-        currentSymbol = symbols.get((int) (Math.random() * symbols.size()));
+        currentPositionIndex = (int) (Math.random() * symbols.size());
+        currentSymbol = symbols.get(currentPositionIndex);
         if (isVisible) draw();
         return currentSymbol;
     }
@@ -106,15 +113,77 @@ public class Wheel {
      * buscándolo por color. No elige al azar como spin, tú decides cuál.
      */
     public boolean placeSymbol(String color) {
-        for (Symbol s : symbols) {
+        for (int i = 0; i < symbols.size(); i++) {
+            Symbol s = symbols.get(i);
             if (s.getColor().equals(color)) {
                 if (isVisible && currentSymbol != null) currentSymbol.makeInvisible();
                 currentSymbol = s;
+                currentPositionIndex = i;
                 if (isVisible) draw();
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Fija esta rueda: mientras esté fija, spin() de la máquina no
+     * debe modificarla.
+     */
+    public void hold() { isHeld = true; }
+
+    /**
+     * Suelta esta rueda: vuelve a girar normalmente con spin().
+     */
+    public void release() { isHeld = false; }
+
+    /**
+     * Dice si esta rueda está fija actualmente.
+     */
+    public boolean isHeld() { return isHeld; }
+
+    /**
+     * Rota la rueda un número de pasos sobre sus posiciones fijas
+     * (0, 1, 2... según cuántos símbolos tenga). Si la rueda es
+     * visible, cada paso se refleja en el canvas llamando a draw().
+     * @param steps número de pasos a avanzar (negativo para retroceder)
+     * @return el símbolo que queda mostrado al final del recorrido
+     */
+    public Symbol rotate(int steps) {
+        if (symbols.isEmpty()) return null;
+
+        int direction = (steps < 0) ? -1 : 1;
+        int totalSteps = Math.abs(steps);
+
+        for (int i = 0; i < totalSteps; i++) {
+            currentPositionIndex = Math.floorMod(currentPositionIndex + direction, symbols.size());
+            currentSymbol = symbols.get(currentPositionIndex);
+            draw();
+        }
+        return currentSymbol;
+    }
+
+    /**
+     * Intercambia el contenido lógico completo de esta rueda con otra
+     * (símbolos, símbolo actual y posición), sin afectar la posición
+     * visual ni el número de ninguna de las dos ruedas.
+     * @param other la otra rueda con la que se intercambia el contenido
+     */
+    void swapContentWith(Wheel other) {
+        List<Symbol> tempSymbols = this.symbols;
+        Symbol tempCurrent = this.currentSymbol;
+        int tempPosition = this.currentPositionIndex;
+
+        this.symbols = other.symbols;
+        this.currentSymbol = other.currentSymbol;
+        this.currentPositionIndex = other.currentPositionIndex;
+
+        other.symbols = tempSymbols;
+        other.currentSymbol = tempCurrent;
+        other.currentPositionIndex = tempPosition;
+
+        if (this.isVisible) this.draw();
+        if (other.isVisible) other.draw();
     }
 
     /**
@@ -185,6 +254,7 @@ public class Wheel {
     @Override
     public String toString() {
         return "Wheel " + wheelNumber + ": " +
-               (currentSymbol != null ? currentSymbol.toString() : "empty");
+               (currentSymbol != null ? currentSymbol.toString() : "empty") +
+               (isHeld ? " [HELD]" : "");
     }
 }

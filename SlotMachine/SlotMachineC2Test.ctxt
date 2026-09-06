@@ -1,0 +1,23 @@
+#BlueJ class context
+#Sun Sep 06 17:51:26 COT 2026
+comment0.target=SlotMachineC2Test
+comment0.text=\r\n Pruebas unitarias del Ciclo 2 para SlotMachine\: swapWheels, holdWheel,\r\n releaseWheel, rotate y setConfiguration. Se ejecutan en modo invisible.\r\n\r\nPruebas que al 100% deben funcionar\r\n
+comment1.target=SlotMachineC2Test()
+comment1.text=\r\n Default constructor for test class SlotMachineC2Test\r\n
+comment10.target=void rotateShouldFailWhenWheelHasNoSymbols()
+comment11.target=void rotateShouldFailWhenWheelDoesNotExist()
+comment12.target=void setConfigurationShouldApplyWhenAllColorsAreValid()
+comment13.target=void setConfigurationShouldChangeNothingWhenOneColorIsInvalid()
+comment14.target=void setConfigurationShouldFailWhenSizeDoesNotMatchWheelCount()
+comment15.target=void tearDown()
+comment15.text=\r\n Tears down the test fixture.\r\n\r\n Called after every test case method.\r\n
+comment2.target=void setUp()
+comment2.text=\r\n Sets up the test fixture.\r\n\r\n Called before every test case method.\r\n
+comment3.target=void swapWheelsShouldExchangeSymbolsBetweenTwoValidWheels()
+comment4.target=void swapWheelsShouldFailWhenAWheelDoesNotExist()
+comment5.target=void holdWheelShouldPreventItFromSpinning()
+comment6.target=void releaseWheelShouldAllowItToSpinAgain()
+comment7.target=void holdWheelShouldFailWhenWheelDoesNotExist()
+comment8.target=void rotateShouldMoveToNextSymbolInWheel()
+comment9.target=void rotateFullCircleShouldReturnToOriginalSymbol()
+numComments=16

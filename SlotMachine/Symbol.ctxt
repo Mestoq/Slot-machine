@@ -1,5 +1,5 @@
 #BlueJ class context
-#Sat Sep 05 20:18:35 COT 2026
+#Sun Sep 06 10:50:21 COT 2026
 comment0.target=Symbol
 comment0.text=\r\n Un s\u00EDmbolo que se muestra en una rueda de la m\u00E1quina.\r\n Se identifica por su color y sabe a qu\u00E9 rueda pertenece.\r\n
 comment1.params=color wheelIndex
