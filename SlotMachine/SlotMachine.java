@@ -28,7 +28,7 @@ public class SlotMachine {
         wheels.add(new Wheel(3));
     }
 
-    /*
+    /**
      * Guarda si la última operación salió bien o mal, y devuelve ese
      * mismo valor (para poder usarlo directo en un return).
      */

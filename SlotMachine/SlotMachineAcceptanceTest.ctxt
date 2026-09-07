@@ -1,0 +1,15 @@
+#BlueJ class context
+#Sun Sep 06 20:32:24 COT 2026
+comment0.target=SlotMachineAcceptanceTest
+comment0.text=\r\n Pruebas de aceptaci\u00F3n del Ciclo 2 para SlotMachine. Cada prueba\r\n representa un escenario de uso completo, de principio a fin.\r\n\r\n
+comment1.target=SlotMachineAcceptanceTest()
+comment1.text=\r\n Default constructor for test class SlotMachineAcceptanceTest\r\n
+comment2.target=void setUp()
+comment2.text=\r\n Sets up the test fixture.\r\n\r\n Called before every test case method.\r\n
+comment3.target=void playerShouldBeAbleToHoldWinningWheelsBeforeSpinning()
+comment3.text=\r\n Prueba 1\r\n el contexto es que el jugador ya tiene dos ruedas mostrando s\u00EDmbolos que\r\n le convienen y no quiere arriesgarlos en el pr\u00F3ximo giro.\r\n\r\n Como las ruedas 1 y 2 est\u00E1n mostrando "red" y "green"\r\n cuando las fija con holdWheel y luego gira toda la\r\n m\u00E1quina con spin()\r\n entonces el giro se acepta, las ruedas fijas\r\n conservan el s\u00EDmbolo que ten\u00EDan antes de girar y\r\n la rueda 3 queda con un s\u00EDmbolo que perteneciente\r\n a su propio conjunto de s\u00EDmbolos.\r\n
+comment4.target=void playerShouldBeAbleToSetADesiredConfigurationAfterCheckingCurrentOne()
+comment4.text=\r\n Prueba 2\r\n esta vez el contexto es que el jugador quiere reproducir una\r\n combinaci\u00F3n espec\u00EDfica para probar c\u00F3mo se ve o comportar\u00EDa\r\n en lugar de depender del la aleatoriedad.\r\n\r\n Ya que se consulta la configuraci\u00F3n actual de la\r\n m\u00E1quina con configuration(),\r\n cuando decide una configuraci\u00F3n unica distinta\r\n con colores que sabe que existen en cada rueda, y la aplica con\r\n setConfiguration de ahi la operaci\u00F3n se acepta correctamente y la m\u00E1quina queda\r\n mostrando la configuraci\u00F3n solicitada por el jugador\r\n verificable de nuevo a trav\u00E9s de configuration().\r\n
+comment5.target=void tearDown()
+comment5.text=\r\n Tears down the test fixture.\r\n\r\n Called after every test case method.\r\n
+numComments=6

@@ -1,0 +1,11 @@
+#BlueJ class context
+#Sun Sep 06 20:32:34 COT 2026
+comment0.target=SlotMachineCC2Test
+comment0.text=\r\n Pruebas compartidas del Ciclo 2 para SlotMachine.\r\n
+comment1.target=SlotMachineCC2Test()
+comment1.text=\r\n Default constructor for test class SlotMachineCC2Test\r\n
+comment2.target=void accordingDrRmShouldKeepSymbolFixedWhenWheelIsHeld()
+comment2.text=\r\n una rueda fija con holdWheel no debe cambiar aunque se gire toda la maquina\r\n
+comment3.target=void accordingDrRmShouldMatchConfigurationWhenAllColorsAreValid()
+comment3.text=\r\n la maquina debe quedar exactamente en la configuracion pedida con setConfiguration\r\n
+numComments=4

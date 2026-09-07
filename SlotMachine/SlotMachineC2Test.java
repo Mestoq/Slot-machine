@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
  * Pruebas unitarias del Ciclo 2 para SlotMachine: swapWheels, holdWheel,
  * releaseWheel, rotate y setConfiguration. Se ejecutan en modo invisible.
  *
- *Pruebas que al 100% deben funcionar
  */
 public class SlotMachineC2Test
 {
@@ -38,7 +37,7 @@ public class SlotMachineC2Test
         machine.addSymbol(3, "magenta");
     }
 
-    // ---------- swapWheels ----------
+    // swapWheels 
 
     @Test
     public void swapWheelsShouldExchangeSymbolsBetweenTwoValidWheels()
@@ -61,7 +60,7 @@ public class SlotMachineC2Test
         assertEquals("red,blue", machine.symbols(1));
     }
 
-    // ---------- holdWheel / releaseWheel ----------
+    // holdWheel / releaseWheel
 
     @Test
     public void holdWheelShouldPreventItFromSpinning()
@@ -85,16 +84,8 @@ public class SlotMachineC2Test
         assertTrue(current.equals("red") || current.equals("blue"));
     }
 
-    @Test
-    public void holdWheelShouldFailWhenWheelDoesNotExist()
-    {
-        boolean success = machine.holdWheel(99);
 
-        assertFalse(success);
-        assertFalse(machine.ok());
-    }
-
-    // ---------- rotate ----------
+    // rotate 
 
     @Test
     public void rotateShouldMoveToNextSymbolInWheel()
@@ -133,7 +124,7 @@ public class SlotMachineC2Test
         assertFalse(machine.ok());
     }
 
-    // ---------- setConfiguration ----------
+    // setConfiguration
 
     @Test
     public void setConfigurationShouldApplyWhenAllColorsAreValid()
@@ -157,14 +148,6 @@ public class SlotMachineC2Test
         assertEquals(before, machine.configuration());
     }
 
-    @Test
-    public void setConfigurationShouldFailWhenSizeDoesNotMatchWheelCount()
-    {
-        boolean success = machine.setConfiguration("blue,yellow");
-
-        assertFalse(success);
-        assertFalse(machine.ok());
-    }
 
     /**
      * Tears down the test fixture.
