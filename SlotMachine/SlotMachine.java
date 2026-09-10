@@ -237,7 +237,7 @@ public class SlotMachine {
      * Deja la máquina en la configuración dada (todo o nada): si algún
      * color no existe en su rueda correspondiente, no se aplica ningún
      * cambio.
-     * @param config colores separados por coma, en orden de número de rueda
+     * config son colores separados por coma, en orden de número de rueda
      */
     public boolean setConfiguration(String config) {
         String[] colors = config.split(",");

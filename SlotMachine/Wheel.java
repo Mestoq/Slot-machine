@@ -62,7 +62,7 @@ public class Wheel {
         if (removed && symbol == currentSymbol) {
             if (isVisible) symbol.makeInvisible();
             currentSymbol = symbols.isEmpty() ? null : symbols.get(0);
-            currentPositionIndex = symbols.isEmpty() ? 0 : 0;
+            currentPositionIndex = 0;
             if (isVisible && currentSymbol != null) draw();
         }
         return removed;
@@ -146,8 +146,8 @@ public class Wheel {
      * Rota la rueda un número de pasos sobre sus posiciones fijas
      * (0, 1, 2... según cuántos símbolos tenga). Si la rueda es
      * visible, cada paso se refleja en el canvas llamando a draw().
-     * @param steps número de pasos a avanzar (negativo para retroceder)
-     * @return el símbolo que queda mostrado al final del recorrido
+     * steps es el número de pasos a avanzar (negativo para retroceder)
+     * retornara el símbolo que queda mostrado al final del recorrido
      */
     public Symbol rotate(int steps) {
         if (symbols.isEmpty()) return null;
@@ -167,7 +167,7 @@ public class Wheel {
      * Intercambia el contenido lógico completo de esta rueda con otra
      * (símbolos, símbolo actual y posición), sin afectar la posición
      * visual ni el número de ninguna de las dos ruedas.
-     * @param other la otra rueda con la que se intercambia el contenido
+     * other es la otra rueda con la que se intercambia el contenido
      */
     void swapContentWith(Wheel other) {
         List<Symbol> tempSymbols = this.symbols;

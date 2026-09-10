@@ -1,5 +1,5 @@
 #BlueJ class context
-#Sun Sep 06 10:50:21 COT 2026
+#Mon Sep 07 08:22:39 COT 2026
 comment0.target=Wheel
 comment0.text=\r\n Una rueda de la m\u00E1quina. Guarda sus propios s\u00EDmbolos y muestra\r\n cu\u00E1l de ellos est\u00E1 activo en pantalla.\r\n
 comment1.params=wheelNumber
