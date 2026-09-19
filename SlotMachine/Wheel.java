@@ -1,15 +1,16 @@
 import java.util.*;
 
 /**
- * Una rueda de la máquina. Guarda sus propios símbolos y muestra
- * cuál de ellos está activo en pantalla.
+ * Una rueda de la máquina. Todas las instancias comparten la misma cinta
+ * de símbolos (lista estática); cada rueda mantiene su propia posición
+ * actual dentro de esa cinta compartida.
  */
 public class Wheel {
-    private List<Symbol> symbols;
+    private static List<Symbol> symbols = new ArrayList<>(); // corregido: faltaba inicializar
     private Symbol currentSymbol;
     private int wheelNumber;
     private boolean isVisible;
-    private boolean isHeld;
+    private boolean isLocked;
     private int currentPositionIndex;
 
     private int xPosition;
@@ -18,11 +19,10 @@ public class Wheel {
     private static final int MARGIN = 20;
 
     public Wheel(int wheelNumber) {
-        this.symbols = new ArrayList<>();
         this.currentSymbol = null;
         this.wheelNumber = wheelNumber;
         this.isVisible = false;
-        this.isHeld = false;
+        this.isLocked = false;
         this.currentPositionIndex = 0;
         this.xPosition = 120 + ((wheelNumber - 1) * (SIZE + MARGIN));
         this.yPosition = 120;
@@ -39,8 +39,8 @@ public class Wheel {
     public int getXPosition() { return xPosition; }
 
     /**
-     * Agrega un símbolo nuevo a esta rueda. Si es el primero que llega,
-     * se queda como el símbolo que se ve por ahora.
+     * Agrega un símbolo nuevo a la cinta compartida. Si es el primero
+     * que llega, se queda como el símbolo que se ve por ahora en esta rueda.
      */
     public boolean addSymbol(Symbol symbol) {
         if (symbol == null) return false;
@@ -54,8 +54,7 @@ public class Wheel {
     }
 
     /**
-     * Quita un símbolo de esta rueda. Si era el que se estaba mostrando,
-     * se elige otro para mostrar en su lugar (o ninguno si ya no quedan).
+     * Quita el símbolo de la cinta compartida, reemplazándolo si era el actual.
      */
     public boolean removeSymbol(Symbol symbol) {
         boolean removed = symbols.remove(symbol);
@@ -74,19 +73,18 @@ public class Wheel {
     public Symbol getCurrentSymbol() { return currentSymbol; }
 
     /**
-     * Dice cuántos símbolos tiene esta rueda guardados.
+     * Dice cuántos símbolos hay en la cinta compartida.
      */
     public int getSymbolCount() { return symbols.size(); }
 
     /**
-     * Devuelve los símbolos que tiene esta rueda, en el orden en que
+     * Devuelve los símbolos de la cinta compartida, en el orden en que
      * se fueron agregando.
      */
     public List<Symbol> getSymbols() { return new ArrayList<>(symbols); }
 
     /**
-     * Revisa si esta rueda ya tiene un símbolo de este color.
-     * Sirve para no repetir colores en la misma rueda.
+     * Revisa si la cinta compartida ya tiene un símbolo de este color.
      */
     public boolean hasColor(String color) {
         for (Symbol s : symbols) {
@@ -96,8 +94,8 @@ public class Wheel {
     }
 
     /**
-     * Gira la rueda: elige un símbolo al azar entre los que tiene y lo
-     * deja mostrado.
+     * Gira la rueda: elige un símbolo al azar entre los de la cinta
+     * compartida y lo deja mostrado en esta rueda.
      */
     public Symbol spin() {
         if (symbols.isEmpty()) return null;
@@ -109,8 +107,8 @@ public class Wheel {
     }
 
     /**
-     * Pone como símbolo actual uno que ya tiene guardado esta rueda,
-     * buscándolo por color. No elige al azar como spin, tú decides cuál.
+     * Pone como símbolo actual uno que existe en la cinta compartida,
+     * buscándolo por color.
      */
     public boolean placeSymbol(String color) {
         for (int i = 0; i < symbols.size(); i++) {
@@ -130,26 +128,24 @@ public class Wheel {
      * Fija esta rueda: mientras esté fija, spin() de la máquina no
      * debe modificarla.
      */
-    public void hold() { isHeld = true; }
+    public void hold() { isLocked = true; }
 
     /**
      * Suelta esta rueda: vuelve a girar normalmente con spin().
      */
-    public void release() { isHeld = false; }
+    public void release() { isLocked = false; }
 
     /**
      * Dice si esta rueda está fija actualmente.
      */
-    public boolean isHeld() { return isHeld; }
+    public boolean isHeld() { return isLocked; } // corregido: antes devolvía true fijo
 
     /**
-     * Rota la rueda un número de pasos sobre sus posiciones fijas
-     * (0, 1, 2... según cuántos símbolos tenga). Si la rueda es
-     * visible, cada paso se refleja en el canvas llamando a draw().
-     * steps es el número de pasos a avanzar (negativo para retroceder)
-     * retornara el símbolo que queda mostrado al final del recorrido
+     * Rota la rueda un número de pasos sobre la cinta compartida.
+     * steps es el número de pasos a avanzar (negativo para retroceder).
+     * Retorna el símbolo que queda mostrado al final del recorrido.
      */
-    public Symbol rotate(int steps) {
+    public Symbol spin(int steps) {
         if (symbols.isEmpty()) return null;
 
         int direction = (steps < 0) ? -1 : 1;
@@ -164,21 +160,18 @@ public class Wheel {
     }
 
     /**
-     * Intercambia el contenido lógico completo de esta rueda con otra
-     * (símbolos, símbolo actual y posición), sin afectar la posición
-     * visual ni el número de ninguna de las dos ruedas.
-     * other es la otra rueda con la que se intercambia el contenido
+     * Intercambia en qué parte de la cinta compartida está posicionada
+     * cada rueda (símbolo actual e índice), sin mover su posición visual
+     * ni su número. Como la cinta ya es compartida, no hay nada que
+     * mover a nivel de listas.
      */
     void swapContentWith(Wheel other) {
-        List<Symbol> tempSymbols = this.symbols;
         Symbol tempCurrent = this.currentSymbol;
         int tempPosition = this.currentPositionIndex;
 
-        this.symbols = other.symbols;
         this.currentSymbol = other.currentSymbol;
         this.currentPositionIndex = other.currentPositionIndex;
 
-        other.symbols = tempSymbols;
         other.currentSymbol = tempCurrent;
         other.currentPositionIndex = tempPosition;
 
@@ -213,8 +206,8 @@ public class Wheel {
 
     /**
      * Renumera esta rueda y su posición base (misma fórmula que el
-     * constructor). Propaga el nuevo número a todos sus símbolos, ya que
-     * cada símbolo depende de su rueda.
+     * constructor). Propaga el nuevo número a todos los símbolos de
+     * la cinta compartida.
      */
     public void setWheelIndex(int newIndex) {
         this.wheelNumber = newIndex;
@@ -255,6 +248,6 @@ public class Wheel {
     public String toString() {
         return "Wheel " + wheelNumber + ": " +
                (currentSymbol != null ? currentSymbol.toString() : "empty") +
-               (isHeld ? " [HELD]" : "");
+               (isLocked ? " [HELD]" : "");
     }
 }
