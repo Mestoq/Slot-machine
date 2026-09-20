@@ -1,0 +1,26 @@
+#BlueJ class context
+#Sat Sep 19 22:55:04 COT 2026
+comment0.target=SlotMachineC2RefTest
+comment0.text=\r\n Pruebas del Ciclo 2 refactorizado\: una prueba por cada m\u00E9todo p\u00FAblico\r\n de SlotMachine, alternando casos de \u00E9xito (shouldAccept) y de error\r\n (shouldError/Fail). Ejecutadas en modo invisible.\r\n\r\n Nota\: symbols en Wheel es static (cinta compartida global), por eso\r\n cada prueba usa colores con un sufijo \u00FAnico (contador de setUp) para\r\n no chocar con s\u00EDmbolos agregados por otras pruebas.\r\n
+comment1.target=void setUp()
+comment10.target=void accordingDoOlShouldAcceptRotatingWheelBySteps()
+comment11.target=void accordingDoOlShouldErrorWhenConfigSizeDoesNotMatch()
+comment12.target=void accordingDoOlShouldErrorWhenSwappingUnknownWheel()
+comment13.target=void accordingDoOlShouldAcceptLockingExistingWheel()
+comment14.target=void accordingDoOlShouldAcceptUnlockingLockedWheel()
+comment15.target=void accordingDoOlShouldReturnAllSymbolsInSharedTape()
+comment16.target=void accordingDoOlShouldReturnCurrentColorPerWheel()
+comment17.target=void accordingDoOlShouldCountUniqueColorsAcrossMachine()
+comment18.target=void accordingDoOlShouldAcceptJackpotWhenAllWheelsMatch()
+comment19.target=void accordingDoOlShouldToggleVisibilityState()
+comment2.target=void accordingDoOlShouldAddNewWheelWhenNumberIsUnique()
+comment20.target=void accordingDoOlShouldLeaveMachineInvisibleAfterExit()
+comment21.target=void tearDown()
+comment3.target=void accordingDoOlShouldErrorWhenWheelAlreadyExists()
+comment4.target=void accordingDoOlShouldErrorWhenDeletingUnknownWheel()
+comment5.target=void accordingDoOlShouldAcceptAddingSymbolToExistingWheel()
+comment6.target=void accordingDoOlShouldErrorWhenDeletingUnknownSymbol()
+comment7.target=void accordingDoOlShouldAcceptPlacingExistingColor()
+comment8.target=void accordingDoOlShouldErrorWhenSpinningUnknownWheel()
+comment9.target=void accordingDoOlShouldAcceptSpinningExistingWheel()
+numComments=22

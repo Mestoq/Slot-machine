@@ -1,16 +1,9 @@
 #BlueJ class context
-#Sun Sep 06 21:14:30 COT 2026
+#Sat Sep 19 22:58:51 COT 2026
 comment0.target=SlotMachineCC2Test
-comment0.text=\r\n Pruebas compartidas del Ciclo 2 para SlotMachine.\r\n
 comment1.target=SlotMachineCC2Test()
-comment1.text=\r\n Default constructor for test class SlotMachineCC2Test\r\n
-comment2.target=void accordingDrRmShouldKeepSymbolFixedWhenWheelIsHeld()
-comment2.text=\r\n una rueda fija con holdWheel no debe cambiar aunque se gire toda la maquina\r\n
-comment3.target=void accordingDrRmShouldMatchConfigurationWhenAllColorsAreValid()
-comment3.text=\r\n la maquina debe quedar exactamente en la configuracion pedida con setConfiguration\r\n
-comment4.target=void accordingClPcShouldKeepDistinctSymbolCountAfterSwap()
-comment5.target=void accordingClPcShouldNotReportJackpotWhenSetConfigurationDiffers()
-comment6.target=void accordingCgHnIsJackpotShouldBeFalseWithOnlyOneWheelEvenIfSymbolIsSet()
-comment7.target=void accordingCgHnAddSymbolShouldFailWhenColorAlreadyExists()
-comment7.text=Adding a color that already exists on a wheel should fail
-numComments=8
+comment2.target=void accordingDoOlShouldKeepSymbolFixedWhenWheelIsLocked()
+comment2.text=\r\n Al fijar una rueda con lock() y luego girar toda la m\u00E1quina,\r\n el s\u00EDmbolo de esa rueda no debe cambiar.\r\n
+comment3.target=void accordingDoOlShouldMatchConfigurationWhenAllColorsAreValid()
+comment3.text=\r\n La m\u00E1quina debe quedar exactamente en la configuraci\u00F3n pedida\r\n con spin(String[]).\r\n
+numComments=4

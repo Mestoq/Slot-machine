@@ -1,47 +1,55 @@
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-/**
- * Pruebas compartidas del Ciclo 2 para SlotMachine.
- */
+
 public class SlotMachineCC2Test
 {
-    /**
-     * Default constructor for test class SlotMachineCC2Test
-     */
     public SlotMachineCC2Test()
     {
     }
 
     /**
-     * una rueda fija con holdWheel no debe cambiar aunque se gire toda la maquina
+     * Al fijar una rueda con lock() y luego girar toda la máquina,
+     * el símbolo de esa rueda no debe cambiar.
      */
     @Test
-public void accordingDrRmShouldKeepSymbolFixedWhenWheelIsHeld()
+    public void accordingDoOlShouldKeepSymbolFixedWhenWheelIsLocked()
     {
         SlotMachine machine = new SlotMachine();
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.addWheel(3);
         machine.addSymbol(1, "red");
         machine.addSymbol(1, "blue");
         machine.addSymbol(2, "green");
         machine.addSymbol(3, "black");
+
         machine.placeSymbol(1, "red");
-        machine.holdWheel(1);
+        machine.lock(1);
         machine.spin();
+
         assertEquals("red", machine.getWheel(0).getCurrentSymbol().getColor());
     }
 
     /**
-     * la maquina debe quedar exactamente en la configuracion pedida con setConfiguration
+     * La máquina debe quedar exactamente en la configuración pedida
+     * con spin(String[]).
      */
     @Test
-    public void accordingDrRmShouldMatchConfigurationWhenAllColorsAreValid()
+    public void accordingDoOlShouldMatchConfigurationWhenAllColorsAreValid()
     {
         SlotMachine machine = new SlotMachine();
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.addWheel(3);
         machine.addSymbol(1, "red");
         machine.addSymbol(1, "blue");
         machine.addSymbol(2, "green");
         machine.addSymbol(2, "yellow");
         machine.addSymbol(3, "black");
-        machine.setConfiguration("blue,yellow,black");
-        assertEquals("blue,yellow,black", machine.configuration());
+
+        machine.spin(new String[]{"blue", "yellow", "black"});
+
+        assertTrue(machine.ok());
+        assertArrayEquals(new String[]{"blue", "yellow", "black"}, machine.configuration());
     }
 }
