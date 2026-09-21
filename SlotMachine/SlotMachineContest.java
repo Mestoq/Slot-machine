@@ -100,7 +100,6 @@ public class SlotMachineContest {
             at = t;
 
             boolean confirmed = false;
-            // Evaluamos saltos dinámicos en lugar de solo asumir que +1 está libre
             for (int testDelta = 1; testDelta < n; testDelta++) {
                 int before = machine.distinctSymbols();
                 spinAndLog(machine, repA, testDelta, actions);
@@ -110,14 +109,11 @@ public class SlotMachineContest {
                 spinAndLog(machine, repB, -testDelta, actions);
 
                 if (after == before + 1) {
-                    // Si k subió, los centinelas cayeron en un espacio vacío y dejaron
-                    // a nuestra candidata atrás. ¡Es la alineación correcta!
+                    // Si k subió es el candidato correcto
                     confirmed = true;
                     break;
                 } else if (after == before - 1) {
-                    // Si k bajó, significa que el espacio original se vació por completo.
-                    // Esto SOLO pasa si nuestra candidata NO estaba alineada con los centinelas.
-                    // Descartamos este falso positivo inmediatamente.
+                    // Si k bajó, significa que el espacio original se vació por completo, no es el indicado
                     break;
                 }
                 // Si after == before, el resultado es ambiguo por colisión. El ciclo probará testDelta + 1.
@@ -146,9 +142,9 @@ public class SlotMachineContest {
                 spinAndLog(machine, group.get(i), delta, actions);
             }
             int after = machine.distinctSymbols();
-            if (after == before + 1) return delta; // estacionamiento limpio
+            if (after == before + 1) return delta; // se ubica
 
-            for (int i = 2; i < group.size(); i++) { // chocó: deshacer y probar otro delta
+            for (int i = 2; i < group.size(); i++) { // vuelve a probar con otro
                 spinAndLog(machine, group.get(i), -delta, actions);
             }
         }
