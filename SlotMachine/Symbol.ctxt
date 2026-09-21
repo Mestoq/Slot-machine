@@ -1,5 +1,9 @@
 #BlueJ class context
+<<<<<<< Updated upstream
 #Sun Sep 20 18:01:46 COT 2026
+=======
+#Thu Sep 10 17:50:41 CST 2026
+>>>>>>> Stashed changes
 comment0.target=Symbol
 comment0.text=\r\n Un s\u00EDmbolo que se muestra en una rueda de la m\u00E1quina.\r\n Se identifica por su color y sabe a qu\u00E9 rueda pertenece.\r\n
 comment1.params=color wheelIndex
