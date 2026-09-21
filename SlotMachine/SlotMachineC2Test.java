@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 /**
  * Pruebas del Ciclo 2 refactorizado
-
  */
 public class SlotMachineC2Test
 {
@@ -38,7 +37,7 @@ public class SlotMachineC2Test
         machine.addSymbol(3, magenta);
     }
 
-    // ---------- addWheel ----------
+    // addWheel
 
     @Test
     public void accordingDoOlShouldAddNewWheelWhenNumberIsUnique()
@@ -59,7 +58,7 @@ public class SlotMachineC2Test
         assertEquals(3, machine.getWheelCount());
     }
 
-    // ---------- delWheel ----------
+    // delWheel
 
     @Test
     public void accordingDoOlShouldErrorWhenDeletingUnknownWheel()
@@ -70,7 +69,7 @@ public class SlotMachineC2Test
         assertEquals(3, machine.getWheelCount());
     }
 
-    // ---------- addSymbol ----------
+    // addSymbol
 
     @Test
     public void accordingDoOlShouldAcceptAddingSymbolToExistingWheel()
@@ -82,7 +81,7 @@ public class SlotMachineC2Test
         assertTrue(machine.getWheel(0).hasColor(purple));
     }
 
-    // ---------- delSymbol ----------
+    // delSymbol
 
     @Test
     public void accordingDoOlShouldErrorWhenDeletingUnknownSymbol()
@@ -92,7 +91,7 @@ public class SlotMachineC2Test
         assertFalse(machine.ok());
     }
 
-    // ---------- placeSymbol ----------
+    // placeSymbol
 
     @Test
     public void accordingDoOlShouldAcceptPlacingExistingColor()
@@ -103,7 +102,7 @@ public class SlotMachineC2Test
         assertEquals(blue, machine.getWheel(0).getCurrentSymbol().getColor());
     }
 
-    // ---------- spin(int) — reemplaza a accordingDoOlShouldErrorWhenAWheelHasNoSymbols ----------
+    // spin(int)
     
     @Test
     public void accordingDoOlShouldErrorWhenSpinningUnknownWheel()
@@ -113,7 +112,7 @@ public class SlotMachineC2Test
         assertFalse(machine.ok());
     }
 
-    // ---------- spin(int) ----------
+    //  spin(int) 
 
     @Test
     public void accordingDoOlShouldAcceptSpinningExistingWheel()
@@ -124,7 +123,7 @@ public class SlotMachineC2Test
         assertNotNull(machine.getWheel(0).getCurrentSymbol());
     }
 
-    // ---------- spin(int, int) ----------
+    // spin(int, int) 
 
     @Test
     public void accordingDoOlShouldAcceptRotatingWheelBySteps()
@@ -138,7 +137,7 @@ public class SlotMachineC2Test
         assertEquals(red, machine.getWheel(0).getCurrentSymbol().getColor());
     }
 
-    // ---------- spin(String[]) ----------
+    // spin(String[]) 
 
     @Test
     public void accordingDoOlShouldErrorWhenConfigSizeDoesNotMatch()
@@ -150,7 +149,7 @@ public class SlotMachineC2Test
         assertFalse(machine.ok());
     }
 
-    // ---------- swap ----------
+    //swap 
 
     @Test
     public void accordingDoOlShouldErrorWhenSwappingUnknownWheel()
@@ -160,7 +159,7 @@ public class SlotMachineC2Test
         assertFalse(machine.ok());
     }
 
-    // ---------- lock ----------
+    // lock 
 
     @Test
     public void accordingDoOlShouldAcceptLockingExistingWheel()
@@ -171,7 +170,7 @@ public class SlotMachineC2Test
         assertTrue(machine.getWheel(0).isHeld());
     }
 
-    // ---------- unlock ----------
+    // unlock 
 
     @Test
     public void accordingDoOlShouldAcceptUnlockingLockedWheel()
@@ -183,7 +182,7 @@ public class SlotMachineC2Test
         assertFalse(machine.getWheel(0).isHeld());
     }
 
-    // ---------- symbols() ----------
+    // symbols()
 
     @Test
     public void accordingDoOlShouldReturnAllSymbolsInSharedTape()
@@ -195,7 +194,7 @@ public class SlotMachineC2Test
             Arrays.asList(red, blue, green, yellow, black, magenta)));
     }
 
-    // ---------- configuration() ----------
+    //  configuration() 
 
     @Test
     public void accordingDoOlShouldReturnCurrentColorPerWheel()
@@ -212,7 +211,7 @@ public class SlotMachineC2Test
         assertEquals(black, config[2]);
     }
 
-    // ---------- distinctSymbols() ----------
+    // distinctSymbols() 
 
     @Test
     public void accordingDoOlShouldCountUniqueColorsAcrossMachine()
@@ -225,7 +224,7 @@ public class SlotMachineC2Test
         assertEquals(before + 1, after);
     }
 
-    // ---------- isJackpot() ----------
+    // isJackpot()
 
     @Test
     public void accordingDoOlShouldAcceptJackpotWhenAllWheelsMatch()
@@ -241,7 +240,7 @@ public class SlotMachineC2Test
         assertTrue(machine.isJackpot());
     }
 
-    // ---------- makeVisible / makeInvisible ----------
+    // makeVisible / makeInvisible 
 
     @Test
     public void accordingDoOlShouldToggleVisibilityState()
@@ -255,7 +254,7 @@ public class SlotMachineC2Test
         assertFalse(machine.isVisibleNow());
     }
 
-    // ---------- exit() ----------
+    //  exit()
 
     @Test
     public void accordingDoOlShouldLeaveMachineInvisibleAfterExit()

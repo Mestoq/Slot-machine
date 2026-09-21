@@ -36,12 +36,13 @@ public class SlotMachine {
         this.yPosition = 100;
         this.result = false;
 
+        
+        Wheel.clearSharedTape();
+
         String[] sharedColors = new String[n];
         java.util.Random random = new java.util.Random();
-        
         for (int i = 0; i < n; i++) {
             String baseColor = AllowedColors[i % AllowedColors.length];
-            
             if (n <= 6) {
                 sharedColors[i] = baseColor;
             } else {
@@ -49,16 +50,36 @@ public class SlotMachine {
             }
         }
 
+        // Instanciar las ruedas
         for (int i = 1; i <= n; i++) {
             Wheel currentWheel = new Wheel(i);
             
-            for (int j = 0; j < n; j++) {
-                currentWheel.addSymbol(new Symbol(sharedColors[j], i));
+            if (i == 1) {
+                for (int j = 0; j < n; j++) {
+                    currentWheel.addSymbol(new Symbol(sharedColors[j], i));
+                }
             }
             
             wheels.add(currentWheel);
         }
 
+        // Desorganizar las ruedas aleatoriamente 
+        boolean allAligned = true;
+        for (int i = 0; i < n; i++) {
+            int randomSteps = random.nextInt(n);
+            wheels.get(i).spin(randomSteps);
+            
+            String firstWheelColor = wheels.get(0).getCurrentSymbol().getColor();
+            String currentWheelColor = wheels.get(i).getCurrentSymbol().getColor();
+            
+            if (i > 0 && !currentWheelColor.equals(firstWheelColor)) {
+                allAligned = false;
+            }
+        }
+
+        if (allAligned && n > 0) {
+            wheels.get(0).spin(1);
+        }
     }
     
     public boolean ok() {
