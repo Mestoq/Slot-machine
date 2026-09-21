@@ -217,7 +217,12 @@ public class SlotMachineC2Test
     public void accordingDoOlShouldCountUniqueColorsAcrossMachine()
     {
         int before = machine.distinctSymbols();
-        machine.addSymbol(1, "unico" + counter); // color garantizado nuevo
+        String newColor = "unico" + counter; 
+
+        machine.addSymbol(1, newColor); 
+        
+
+        machine.placeSymbol(1, newColor); 
 
         int after = machine.distinctSymbols();
 

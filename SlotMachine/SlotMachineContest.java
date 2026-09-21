@@ -76,8 +76,9 @@ public class SlotMachineContest {
     }
 
     // Alinear una rueda más contra el grupo de centinelas
+
     private void alignWheelToGroup(SlotMachine machine, int wheel, List<Integer> group,
-                                    int n, List<int[]> actions) {
+                                   int n, List<int[]> actions) {
         int repA = group.get(0);
         int repB = group.get(1);
         int parkDelta = 0;
@@ -94,14 +95,31 @@ public class SlotMachineContest {
             spinAndLog(machine, wheel, t - at, actions);
             at = t;
 
-            int before = machine.distinctSymbols();
-            spinAndLog(machine, repA, 1, actions);
-            spinAndLog(machine, repB, 1, actions);
-            int after = machine.distinctSymbols();
-            spinAndLog(machine, repA, -1, actions);
-            spinAndLog(machine, repB, -1, actions);
+            boolean confirmed = false;
+            // Evaluamos saltos dinámicos en lugar de solo asumir que +1 está libre
+            for (int testDelta = 1; testDelta < n; testDelta++) {
+                int before = machine.distinctSymbols();
+                spinAndLog(machine, repA, testDelta, actions);
+                spinAndLog(machine, repB, testDelta, actions);
+                int after = machine.distinctSymbols();
+                spinAndLog(machine, repA, -testDelta, actions);
+                spinAndLog(machine, repB, -testDelta, actions);
 
-            if (after == before + 1) break; // confirmado
+                if (after == before + 1) {
+                    // Si k subió, los centinelas cayeron en un espacio vacío y dejaron
+                    // a nuestra candidata atrás. ¡Es la alineación correcta!
+                    confirmed = true;
+                    break;
+                } else if (after == before - 1) {
+                    // Si k bajó, significa que el espacio original se vació por completo.
+                    // Esto SOLO pasa si nuestra candidata NO estaba alineada con los centinelas.
+                    // Descartamos este falso positivo inmediatamente.
+                    break;
+                }
+                // Si after == before, el resultado es ambiguo por colisión. El ciclo probará testDelta + 1.
+            }
+            
+            if (confirmed) break;
         }
 
         if (parkDelta != 0) {

@@ -1,0 +1,9 @@
+#BlueJ class context
+#Sun Sep 20 23:13:01 COT 2026
+comment0.target=SlotMachineTest
+comment1.target=void setUp()
+comment2.target=void shouldNeverStartSolvedAccordingToMarathonRules()
+comment3.target=void spinShouldMaintainStateWhenReversed()
+comment4.target=void solverShouldCompleteWithinActionLimit()
+comment5.target=void solverShouldScaleEfficientlyWithMaximumWheels()
+numComments=6
