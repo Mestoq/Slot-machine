@@ -1,5 +1,9 @@
 #BlueJ class context
+<<<<<<< Updated upstream
 #Sun Sep 20 22:29:47 COT 2026
+=======
+#Thu Sep 10 17:50:41 CST 2026
+>>>>>>> Stashed changes
 comment0.target=Wheel
 comment0.text=\r\n Una rueda de la m\u00E1quina. Todas las instancias comparten la misma cinta\r\n de s\u00EDmbolos (lista est\u00E1tica); cada rueda mantiene su propia posici\u00F3n\r\n actual dentro de esa cinta compartida.\r\n
 comment1.params=wheelNumber

@@ -1,5 +1,9 @@
 #BlueJ class context
+<<<<<<< Updated upstream
 #Sun Sep 20 22:42:06 COT 2026
+=======
+#Thu Sep 10 17:50:41 CST 2026
+>>>>>>> Stashed changes
 comment0.target=SlotMachine
 comment1.target=SlotMachine()
 comment10.target=void spin()
