@@ -6,7 +6,7 @@ import java.util.*;
  * actual dentro de esa cinta compartida.
  */
 public class Wheel {
-    private static List<Symbol> symbols = new ArrayList<>(); // corregido: faltaba inicializar
+    private static List<Symbol> symbols = new ArrayList<>(); 
     private Symbol currentSymbol;
     private int wheelNumber;
     private boolean isVisible;
@@ -18,6 +18,9 @@ public class Wheel {
     private static final int SIZE = 90;
     private static final int MARGIN = 20;
 
+    // Añade este método para limpiar la memoria fantasma de BlueJ
+
+
     public Wheel(int wheelNumber) {
         this.currentSymbol = null;
         this.wheelNumber = wheelNumber;
@@ -26,6 +29,18 @@ public class Wheel {
         this.currentPositionIndex = 0;
         this.xPosition = 120 + ((wheelNumber - 1) * (SIZE + MARGIN));
         this.yPosition = 120;
+        
+        
+        if (symbols != null && !symbols.isEmpty()) {
+            this.currentSymbol = symbols.get(0);
+            this.currentPositionIndex = 0;
+        }
+    }
+    
+        public static void clearSharedTape() {
+        if (symbols != null) {
+            symbols.clear();
+        }
     }
 
     /**

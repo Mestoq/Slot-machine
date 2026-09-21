@@ -1,15 +1,11 @@
 import java.util.*;
 
 /**
- * Resuelve el problema de la maratón "Slot Machine" usando ÚNICAMENTE
- * la API pública de testeo de SlotMachine: el constructor SlotMachine(n),
- * spin(wheel, steps) y distinctSymbols(). No conoce ni toca ningún
- * estado interno de Wheel/Symbol — por eso SlotMachineContest depende
- * de SlotMachine (composición), no hereda de ella.
+ * Resuelve el problema de la maraton
  */
 public class SlotMachineContest {
 
-    /** Resuelve de forma invisible y devuelve la secuencia de acciones {i, j}. */
+    // Resuelve de forma invisible 
     public int[][] solve(int n) {
         SlotMachine machine = new SlotMachine(n);
         List<int[]> actions = new ArrayList<>();
@@ -17,7 +13,7 @@ public class SlotMachineContest {
         return actions.toArray(new int[0][]);
     }
 
-    /** Corre el mismo algoritmo, pero visible, para ver el proceso en el Canvas. */
+    // Corre el mismo algoritmo, pero visible, limitado por los parametros del color. 
     public void simulate(int n) {
         if (n > 6) {
             System.out.println("Error: La simulación soporta un máximo de 7 ruedas.");
@@ -29,12 +25,12 @@ public class SlotMachineContest {
         run(machine, n, actions);
     }
 
-    // ------------------------------------------------------------------
+    // aqui arranca
     private void run(SlotMachine machine, int n, List<int[]> actions) {
-        if (machine.distinctSymbols() == 1) return; // ya viene resuelto
+        if (machine.distinctSymbols() == 1) return; //resuleto
 
         List<Integer> group = new ArrayList<>();
-        group.add(1); // rueda 1: ancla / primer centinela
+        group.add(1); // la rueda 1 sera primer centinela
 
         List<Integer> pending = new ArrayList<>();
         for (int i = 2; i <= n; i++) pending.add(i);
@@ -48,7 +44,7 @@ public class SlotMachineContest {
         }
     }
 
-    // ---------- Fase de arranque: encontrar la primera pareja confirmada ----------
+    // Encontrar la  pareja de centinelas
     private void growGroupToTwo(SlotMachine machine, int n, List<Integer> group,
                                  List<Integer> pending, List<int[]> actions) {
         int wheelA = pending.get(0);
@@ -79,7 +75,7 @@ public class SlotMachineContest {
         pending.remove(Integer.valueOf(wheelB));
     }
 
-    // ---------- Fase principal: alinear una rueda más contra el grupo ----------
+    // Alinear una rueda más contra el grupo de centinelas
     private void alignWheelToGroup(SlotMachine machine, int wheel, List<Integer> group,
                                     int n, List<int[]> actions) {
         int repA = group.get(0);
@@ -116,9 +112,9 @@ public class SlotMachineContest {
     }
 
     /**
-     * Aleja a todo el grupo salvo los 2 centinelas, para que el
-     * detector de repA/repB vuelva a ser confiable. Prueba varios
-     * desplazamientos hasta confirmar (con una lectura real) que no
+     * Aleja a todo el grupo excepto los 2 centinelas, para que el
+     * detector de repA/repB sea consistente y va probando varios
+     * desplazamientos hasta confirmar  que no
      * chocaron por casualidad con otra rueda.
      */
     private int parkRestOfGroup(SlotMachine machine, List<Integer> group, List<int[]> actions,int n) {
@@ -137,7 +133,7 @@ public class SlotMachineContest {
         return 0;
     }
 
-    // ---------- Utilidades compartidas ----------
+    // Utilidades compartidas
     private int[] sweepWheel(SlotMachine machine, int wheel, int n, List<int[]> actions) {
         int[] readings = new int[n];
         readings[0] = machine.distinctSymbols();
