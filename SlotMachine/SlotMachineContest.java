@@ -7,6 +7,10 @@ public class SlotMachineContest {
 
     // Resuelve de forma invisible 
     public int[][] solve(int n) {
+        if (n < 3) {
+            System.out.println("Error: La simulación no debe correrse con menos de 3 ruedas.");
+            return new int [0][];
+        }
         SlotMachine machine = new SlotMachine(n);
         List<int[]> actions = new ArrayList<>();
         run(machine, n, actions);
@@ -15,7 +19,7 @@ public class SlotMachineContest {
 
     // Corre el mismo algoritmo, pero visible, limitado por los parametros del color. 
     public void simulate(int n) {
-        if (n > 6) {
+        if (n > 6 || n < 3) {
             System.out.println("Error: La simulación soporta un máximo de 7 ruedas.");
             return;
         }

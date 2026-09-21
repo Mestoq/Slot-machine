@@ -16,21 +16,18 @@ public class SlotMachineCTest {
     }
 
     @Test
-    public void shouldSupportMinimumOfThreeWheels() {
-        // Creamos una máquina con el límite mínimo de 3 ruedas
-        SlotMachine machine = new SlotMachine(3);
+    public void accordingDoOlshouldNotRunAndReturnEmptyWhenLessThanThreeWheels() {
         SlotMachineContest contest = new SlotMachineContest();
         
-        // Verificamos que la máquina no inicia resuelta y que el solver puede procesarla
-        int initialK = machine.distinctSymbols();
-        assertTrue("Una máquina de 3 ruedas debe iniciar desordenada (k > 1)", initialK > 1);
+        // Intentamos resolver con 2 ruedas (caso inválido/menor al mínimo)
+        int[][] actions = contest.solve(2);
         
-        int[][] actions = contest.solve(3);
-        assertNotNull("El solver debe devolver un arreglo de acciones válido para N=3", actions);
+        assertNotNull("El resultado no debe ser nulo", actions);
+        assertEquals("El algoritmo no debió correr, por lo que las acciones deben ser 0", 0, actions.length);
     }
 
     @Test
-    public void solverShouldScaleEfficientlyWithMaximumWheels() {
+    public void accordingDoOlsolverShouldScaleEfficientlyWithMaximumWheels() {
         // Prueba de estrés con el límite máximo de la competencia (N = 50)
         int[][] actions = contest.solve(50);
         
