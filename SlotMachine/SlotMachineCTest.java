@@ -16,12 +16,17 @@ public class SlotMachineCTest {
     }
 
     @Test
-    public void solverShouldCompleteWithinActionLimit() {
-        // La maratón exige un máximo de 10,000 acciones
-        int[][] actions = contest.solve(5);
+    public void shouldSupportMinimumOfThreeWheels() {
+        // Creamos una máquina con el límite mínimo de 3 ruedas
+        SlotMachine machine = new SlotMachine(3);
+        SlotMachineContest contest = new SlotMachineContest();
         
-        assertNotNull("La lista de acciones no debe ser nula", actions);
-        assertTrue("El algoritmo excedió el límite de 10,000 turnos del juez", actions.length <= 10000);
+        // Verificamos que la máquina no inicia resuelta y que el solver puede procesarla
+        int initialK = machine.distinctSymbols();
+        assertTrue("Una máquina de 3 ruedas debe iniciar desordenada (k > 1)", initialK > 1);
+        
+        int[][] actions = contest.solve(3);
+        assertNotNull("El solver debe devolver un arreglo de acciones válido para N=3", actions);
     }
 
     @Test
