@@ -1,7 +1,7 @@
 #BlueJ class context
-#Sat Sep 19 22:55:04 COT 2026
-comment0.target=SlotMachineC2RefTest
-comment0.text=\r\n Pruebas del Ciclo 2 refactorizado\: una prueba por cada m\u00E9todo p\u00FAblico\r\n de SlotMachine, alternando casos de \u00E9xito (shouldAccept) y de error\r\n (shouldError/Fail). Ejecutadas en modo invisible.\r\n\r\n Nota\: symbols en Wheel es static (cinta compartida global), por eso\r\n cada prueba usa colores con un sufijo \u00FAnico (contador de setUp) para\r\n no chocar con s\u00EDmbolos agregados por otras pruebas.\r\n
+#Sun Sep 20 14:01:47 COT 2026
+comment0.target=SlotMachineC2Test
+comment0.text=\r\n Pruebas del Ciclo 2 refactorizado\r\n\r\n
 comment1.target=void setUp()
 comment10.target=void accordingDoOlShouldAcceptRotatingWheelBySteps()
 comment11.target=void accordingDoOlShouldErrorWhenConfigSizeDoesNotMatch()

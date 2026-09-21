@@ -1,19 +1,14 @@
+
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
-
 /**
- * Pruebas del Ciclo 2 refactorizado: una prueba por cada método público
- * de SlotMachine, alternando casos de éxito (shouldAccept) y de error
- * (shouldError/Fail). Ejecutadas en modo invisible.
- *
- * Nota: symbols en Wheel es static (cinta compartida global), por eso
- * cada prueba usa colores con un sufijo único (contador de setUp) para
- * no chocar con símbolos agregados por otras pruebas.
+ * Pruebas del Ciclo 2 refactorizado
+
  */
-public class SlotMachineC2RefTest
+public class SlotMachineC2Test
 {
     private SlotMachine machine;
     private static int counter = 0;

@@ -1,0 +1,13 @@
+#BlueJ class context
+#Sun Sep 20 22:05:11 COT 2026
+comment0.target=SlotMachineContest
+comment0.text=\r\n Resuelve el problema de la marat\u00F3n "Slot Machine" usando \u00DANICAMENTE\r\n la API p\u00FAblica de testeo de SlotMachine\: el constructor SlotMachine(n),\r\n spin(wheel, steps) y distinctSymbols(). No conoce ni toca ning\u00FAn\r\n estado interno de Wheel/Symbol \u2014 por eso SlotMachineContest depende\r\n de SlotMachine (composici\u00F3n), no hereda de ella.\r\n
+comment1.params=n
+comment1.target=int[][] solve(int)
+comment1.text=Resuelve de forma invisible y devuelve la secuencia de acciones {i, j}.
+comment2.params=n
+comment2.target=void simulate(int)
+comment2.text=Corre el mismo algoritmo, pero visible, para ver el proceso en el Canvas.
+comment3.params=readings
+comment3.target=java.util.List candidatesFromReadings(int[])
+numComments=4

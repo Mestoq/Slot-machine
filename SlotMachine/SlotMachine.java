@@ -13,6 +13,9 @@ public class SlotMachine {
     public static int yPosition;
     private static int width = 500;
     private static final int HEIGHT = 200;
+    private static final String[] AllowedColors = {
+        "red", "blue", "yellow", "green", "magenta", "white"
+    };
 
     public SlotMachine() {
         this.wheels = new ArrayList<>();
@@ -23,7 +26,41 @@ public class SlotMachine {
         this.yPosition = 100;
         this.result = false;
     }
+    
+    public SlotMachine(int n) {
+        this.wheels = new ArrayList<>();
+        this.isVisible = false;
+        this.canvas = null;
+        this.mainContainer = null;
+        this.xPosition = 100;
+        this.yPosition = 100;
+        this.result = false;
 
+        String[] sharedColors = new String[n];
+        java.util.Random random = new java.util.Random();
+        
+        for (int i = 0; i < n; i++) {
+            String baseColor = AllowedColors[i % AllowedColors.length];
+            
+            if (n <= 6) {
+                sharedColors[i] = baseColor;
+            } else {
+                sharedColors[i] = baseColor + "-" + i;
+            }
+        }
+
+        for (int i = 1; i <= n; i++) {
+            Wheel currentWheel = new Wheel(i);
+            
+            for (int j = 0; j < n; j++) {
+                currentWheel.addSymbol(new Symbol(sharedColors[j], i));
+            }
+            
+            wheels.add(currentWheel);
+        }
+
+    }
+    
     public boolean ok() {
         return result;
     }
@@ -295,15 +332,24 @@ public class SlotMachine {
         return colors;
     }
 
+    /**
+     * Cuenta cuántos símbolos DISTINTOS se están mostrando actualmente,
+     * leyendo directamente el currentSymbol de cada rueda (no la cinta
+     * completa, y sin pasar por configuration()).
+     * Esta es la señal "k" que reporta el amigo en el problema de la maratón.
+     * Precondición del contexto de uso: SlotMachine(n) garantiza que toda
+     * rueda siempre tiene un currentSymbol asignado (invariante 1 rueda : 1 símbolo).
+     */
     public int distinctSymbols() {
-        Set<String> colors = new HashSet<>();
+        Set<String> visible = new HashSet<>();
         for (Wheel w : wheels) {
-            for (Symbol s : w.getSymbols()) {
-                colors.add(s.getColor());
+            Symbol current = w.getCurrentSymbol();
+            if (current != null) {          // guarda defensiva, no debería dispararse nunca en este contexto
+                visible.add(current.getColor());
             }
         }
         result = true;
-        return colors.size();
+        return visible.size();
     }
 
     public boolean isJackpot() {

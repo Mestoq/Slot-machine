@@ -207,4 +207,5 @@ public class Canvas{
         canvas.setPreferredSize(new Dimension(width, height));
         frame.pack();
     }
+    
 }
