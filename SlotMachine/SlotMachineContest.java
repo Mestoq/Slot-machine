@@ -65,7 +65,7 @@ public class SlotMachineContest {
     }
 
     /**
-     * Mira con que rueda estaba emparejandose y con eso sabemos cual realmente aplicarle el movimiento
+     * Desorganizamos todo y evitar que hallan repetidos en los currentsymbol
      */
     private void permutation(SlotMachine machine, int n, List<int[]> actions) {
         for (int i = 2; i <= n; i++) {
