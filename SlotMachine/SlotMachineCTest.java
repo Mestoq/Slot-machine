@@ -5,7 +5,7 @@ import org.junit.Test;
 public class SlotMachineCTest {
 
     private SlotMachine machine;
-    private SlotMachineContest contest;
+    private SlotMachineContest contest = new SlotMachineContest();
 
 
     @Test
@@ -20,11 +20,12 @@ public class SlotMachineCTest {
     }
 
     @Test
-    public void accordingDoOlsolverShouldScaleEfficientlyWithMaximumWheels() {
+    public void solveShouldScaleEfficientlyWithMaximumWheels() {
         // Prueba de estrés con el límite de la competencia (N = 50)
         int[][] actions = contest.solve(50);
-        
-        // Para N=50, un algoritmo O(N^2)
-        assertTrue("El escalado asintótico falló para N=50", actions.length <= 10000);
+
+        // Para N=50, un algoritmo O(N^2) debe quedar muy por debajo del límite
+        assertTrue("El escalado asintótico falló para N=50: " + actions.length + " acciones",
+                actions.length <= 10000);
     }
 }

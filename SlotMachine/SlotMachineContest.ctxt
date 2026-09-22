@@ -1,11 +1,8 @@
 #BlueJ class context
-#Sun Sep 20 23:52:42 COT 2026
+#Mon Sep 21 22:24:50 COT 2026
 comment0.target=SlotMachineContest
-comment0.text=\r\n Resuelve el problema de la maraton\r\n
 comment1.params=n
 comment1.target=int[][] solve(int)
 comment2.params=n
 comment2.target=void simulate(int)
-comment3.params=readings
-comment3.target=java.util.List candidatesFromReadings(int[])
-numComments=4
+numComments=3

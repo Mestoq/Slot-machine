@@ -1,15 +1,11 @@
 import java.util.*;
 
-/**
- * Resuelve el problema de la maraton
- */
 public class SlotMachineContest {
 
-    // Resuelve de forma invisible 
     public int[][] solve(int n) {
-        if (n < 3) {
-            System.out.println("Error: La simulación no debe correrse con menos de 3 ruedas.");
-            return new int [0][];
+        if (n < 3|| n < 50) {
+            System.out.println("Error: La simulación no debe correrse con menos de 3 ruedas o mas de 50.");
+            return new int[0][];
         }
         SlotMachine machine = new SlotMachine(n);
         List<int[]> actions = new ArrayList<>();
@@ -17,7 +13,6 @@ public class SlotMachineContest {
         return actions.toArray(new int[0][]);
     }
 
-    // Corre el mismo algoritmo, pero visible, limitado por los parametros del color. 
     public void simulate(int n) {
         if (n > 6 || n < 3) {
             System.out.println("Error: La simulación soporta un máximo de 7 ruedas.");
@@ -29,152 +24,70 @@ public class SlotMachineContest {
         run(machine, n, actions);
     }
 
-    // aqui arranca
     private void run(SlotMachine machine, int n, List<int[]> actions) {
-        if (machine.distinctSymbols() == 1) return; //resuleto
+        if (machine.distinctSymbols() == 1) return; // caso "trivial"
 
-        List<Integer> group = new ArrayList<>();
-        group.add(1); // la rueda 1 sera primer centinela
+        // separar todas las ruedas para que muestren símbolos únicos
+        permutation(machine, n, actions);
 
-        List<Integer> pending = new ArrayList<>();
-        for (int i = 2; i <= n; i++) pending.add(i);
+        // descubrir, para cada símbolo k=1..n-1, qué rueda lo tenía
+        int[] holderOfSymbol = new int[n];
+        boolean[] identified = new boolean[n + 1];
+        identified[1] = true; // la rueda 1 es su propio punto de partida (k=0)
 
-        growGroupToTwo(machine, n, group, pending, actions);
+        for (int k = 1; k <= n - 1; k++) {
+            spinAndLog(machine, 1, 1, actions); // rueda 1 avanza a símbolo k
 
-        while (!pending.isEmpty()) {
-            int wheel = pending.remove(0);
-            alignWheelToGroup(machine, wheel, group, n, actions);
-            group.add(wheel);
-        }
-    }
+            for (int j = 2; j <= n; j++) {
+                if (identified[j]) continue; // ya resuelta antes, no se vuelve a tocar
 
-    // Encontrar la  pareja de centinelas
-    private void growGroupToTwo(SlotMachine machine, int n, List<Integer> group,
-                                 List<Integer> pending, List<int[]> actions) {
-        int wheelA = pending.get(0);
-        int wheelB = pending.get(1);
-
-        List<Integer> candA = candidatesFromReadings(sweepWheel(machine, wheelA, n, actions));
-        List<Integer> candB = candidatesFromReadings(sweepWheel(machine, wheelB, n, actions));
-
-        int bestA = candA.get(0), bestB = candB.get(0), bestK = Integer.MAX_VALUE;
-        int atA = 0, atB = 0;
-
-        for (int ta : candA) {
-            spinAndLog(machine, wheelA, ta - atA, actions);
-            atA = ta;
-            for (int tb : candB) {
-                spinAndLog(machine, wheelB, tb - atB, actions);
-                atB = tb;
-                int k = machine.distinctSymbols();
-                if (k < bestK) { bestK = k; bestA = ta; bestB = tb; }
-            }
-        }
-        spinAndLog(machine, wheelA, bestA - atA, actions);
-        spinAndLog(machine, wheelB, bestB - atB, actions);
-
-        group.add(wheelA);
-        group.add(wheelB);
-        pending.remove(Integer.valueOf(wheelA));
-        pending.remove(Integer.valueOf(wheelB));
-    }
-
-    // Alinear una rueda más contra el grupo de centinelas
-
-    private void alignWheelToGroup(SlotMachine machine, int wheel, List<Integer> group,
-                                   int n, List<int[]> actions) {
-        int repA = group.get(0);
-        int repB = group.get(1);
-        int parkDelta = 0;
-
-        if (group.size() > 2) {
-            parkDelta = parkRestOfGroup(machine, group, actions, n);
-        }
-
-        int[] readings = sweepWheel(machine, wheel, n, actions);
-        List<Integer> candidates = candidatesFromReadings(readings);
-        int at = 0;
-
-        for (int t : candidates) {
-            spinAndLog(machine, wheel, t - at, actions);
-            at = t;
-
-            boolean confirmed = false;
-            for (int testDelta = 1; testDelta < n; testDelta++) {
                 int before = machine.distinctSymbols();
-                spinAndLog(machine, repA, testDelta, actions);
-                spinAndLog(machine, repB, testDelta, actions);
+                spinAndLog(machine, j, -1, actions); // única casilla vacía posible
                 int after = machine.distinctSymbols();
-                spinAndLog(machine, repA, -testDelta, actions);
-                spinAndLog(machine, repB, -testDelta, actions);
 
                 if (after == before + 1) {
-                    // Si k subió es el candidato correcto
-                    confirmed = true;
+                    holderOfSymbol[k] = j; // confirmado, sin ambigüedad
+                    identified[j] = true;
                     break;
-                } else if (after == before - 1) {
-                    // Si k bajó, significa que el espacio original se vació por completo, no es el indicado
-                    break;
+                } else {
+                    spinAndLog(machine, j, 1, actions); // deshacer, no era esta
                 }
-                // Si after == before, el resultado es ambiguo por colisión. El ciclo probará testDelta + 1.
             }
-            
-            if (confirmed) break;
         }
 
-        if (parkDelta != 0) {
-            for (int i = 2; i < group.size(); i++) {
-                spinAndLog(machine, group.get(i), -parkDelta, actions);
-            }
+        // FASE 3: alineación final — todos vuelven al símbolo original de la rueda 1
+        spinAndLog(machine, 1, -(n - 1), actions);
+        for (int k = 1; k <= n - 1; k++) {
+            int wheel = holderOfSymbol[k];
+            // ya quedó en (k-1) tras la Fase 2; falta retroceder (k-1) pasos más
+            spinAndLog(machine, wheel, -(k - 1), actions);
         }
     }
 
     /**
-     * Aleja a todo el grupo excepto los 2 centinelas, para que el
-     * detector de repA/repB sea consistente y va probando varios
-     * desplazamientos hasta confirmar  que no
-     * chocaron por casualidad con otra rueda.
+     * Mira con que rueda estaba emparejandose y con eso sabemos cual realmente aplicarle el movimiento
      */
-    private int parkRestOfGroup(SlotMachine machine, List<Integer> group, List<int[]> actions,int n) {
-        for (int delta = 2; delta < n; delta++) {
-            int before = machine.distinctSymbols();
-            for (int i = 2; i < group.size(); i++) {
-                spinAndLog(machine, group.get(i), delta, actions);
+    private void permutation(SlotMachine machine, int n, List<int[]> actions) {
+        for (int i = 2; i <= n; i++) {
+            int[] readings = new int[n];
+            readings[0] = machine.distinctSymbols();
+            for (int t = 1; t < n; t++) {
+                spinAndLog(machine, i, 1, actions);
+                readings[t] = machine.distinctSymbols();
             }
-            int after = machine.distinctSymbols();
-            if (after == before + 1) return delta; // se ubica
+            // volver a la posición original antes de fijar la mejor
+            spinAndLog(machine, i, 1, actions); // cierra el ciclo (vuelve a t=0)
 
-            for (int i = 2; i < group.size(); i++) { // vuelve a probar con otro
-                spinAndLog(machine, group.get(i), -delta, actions);
+            int bestT = 0, bestReading = readings[0];
+            for (int t = 1; t < n; t++) {
+                if (readings[t] > bestReading) { bestReading = readings[t]; bestT = t; }
             }
+            spinAndLog(machine, i, bestT, actions); // se queda en la mejor posición
         }
-        return 0;
-    }
-
-    // Utilidades compartidas
-    private int[] sweepWheel(SlotMachine machine, int wheel, int n, List<int[]> actions) {
-        int[] readings = new int[n];
-        readings[0] = machine.distinctSymbols();
-        for (int t = 1; t < n; t++) {
-            spinAndLog(machine, wheel, 1, actions);
-            readings[t] = machine.distinctSymbols();
-        }
-        spinAndLog(machine, wheel, 1, actions); // cierra el ciclo completo
-        return readings;
-    }
-
-    private List<Integer> candidatesFromReadings(int[] readings) {
-        int min = Integer.MAX_VALUE;
-        for (int r : readings) min = Math.min(min, r);
-        List<Integer> candidates = new ArrayList<>();
-        for (int t = 0; t < readings.length; t++) {
-            if (readings[t] == min) candidates.add(t);
-        }
-        return candidates;
     }
 
     private void spinAndLog(SlotMachine machine, int wheel, int steps, List<int[]> actions) {
-        if (steps == 0) return; // un giro de 0 no gasta acción
+        if (steps == 0) return;
         machine.spin(wheel, steps);
         actions.add(new int[]{wheel, steps});
     }
