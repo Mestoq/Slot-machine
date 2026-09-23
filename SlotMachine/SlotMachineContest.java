@@ -61,7 +61,7 @@ public class SlotMachineContest {
         spinAndLog(machine, 1, -(n - 1), actions);
         for (int k = 1; k <= n - 1; k++) {
             int wheel = holderOfSymbol[k];
-            // ya quedó en (k-1) tras la Fase 2; falta retroceder (k-1) pasos más
+            
             spinAndLog(machine, wheel, -(k - 1), actions);
         }
     }
