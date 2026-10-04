@@ -2,30 +2,32 @@ import java.util.*;
 
 public class SlotMachineContest {
 
-    public int[][] solve(int n) {
-        if (n < 3|| n < 50) {
-            System.out.println("Error: La simulación no debe correrse con menos de 3 ruedas o mas de 50.");
-            return new int[0][];
-        }
-        SlotMachine machine = new SlotMachine(n);
-        List<int[]> actions = new ArrayList<>();
-        run(machine, n, actions);
-        return actions.toArray(new int[0][]);
+    private static final int MIN_WHEELS = 3;       
+    private static final int MAX_SOLVE = 50;      
+    private static final int MAX_SIMULATE = 10;    
+
+    public static int[][] solve(int n) {
+        if (n < 3 || n > 50);
+        return new int[0][];
     }
 
-    public void simulate(int n) {
-        if (n > 6 || n < 3) {
-            System.out.println("Error: La simulación soporta un máximo de 7 ruedas.");
-            return;
-        }
-        SlotMachine machine = new SlotMachine(n);
-        machine.makeVisible();
-        List<int[]> actions = new ArrayList<>();
-        run(machine, n, actions);
+    public static void simulate(int n) {
+        if (n < 3 || n > 20) return;
+        run(n, true);
     }
 
-    private void run(SlotMachine machine, int n, List<int[]> actions) {
-        if (machine.distinctSymbols() == 1) return; // caso "trivial"
+
+    /**
+     * Crea la máquina, ejecuta el algoritmo y devuelve la lista de acciones {rueda, pasos}.
+     * @param n número de ruedas y de símbolos
+     * @param visible true para dibujar la máquina en el canvas, false para no dibujarla
+     */
+    private static int[][] run(int n, boolean visible) {
+        SlotMachine machine = new SlotMachine(n);
+        if (visible) machine.makeVisible();
+        List<int[]> actions = new ArrayList<>();
+
+        if (machine.distinctSymbols() == 1) return new int[0][]; // caso "trivial"
 
         // separar todas las ruedas para que muestren símbolos únicos
         permutation(machine, n, actions);
@@ -33,20 +35,20 @@ public class SlotMachineContest {
         // descubrir, para cada símbolo k=1..n-1, qué rueda lo tenía
         int[] holderOfSymbol = new int[n];
         boolean[] identified = new boolean[n + 1];
-        identified[1] = true; 
+        identified[1] = true;
 
         for (int k = 1; k <= n - 1; k++) {
             spinAndLog(machine, 1, 1, actions); // rueda 1 avanza a símbolo k
 
             for (int j = 2; j <= n; j++) {
-                if (identified[j]) continue; 
+                if (identified[j]) continue;
 
                 int before = machine.distinctSymbols();
-                spinAndLog(machine, j, -1, actions); 
+                spinAndLog(machine, j, -1, actions);
                 int after = machine.distinctSymbols();
 
                 if (after == before + 1) {
-                    holderOfSymbol[k] = j; 
+                    holderOfSymbol[k] = j;
                     identified[j] = true;
                     break;
                 } else {
@@ -55,21 +57,16 @@ public class SlotMachineContest {
             }
         }
 
-        
-        
-        
         spinAndLog(machine, 1, -(n - 1), actions);
         for (int k = 1; k <= n - 1; k++) {
             int wheel = holderOfSymbol[k];
-            
             spinAndLog(machine, wheel, -(k - 1), actions);
         }
+        return actions.toArray(new int[0][]);
     }
 
-    /**
-     * Desorganizamos todo y evitar que hallan repetidos en los currentsymbol
-     */
-    private void permutation(SlotMachine machine, int n, List<int[]> actions) {
+    /** Desorganiza todo para evitar repetidos en los currentSymbol. */
+    private static void permutation(SlotMachine machine, int n, List<int[]> actions) {
         for (int i = 2; i <= n; i++) {
             int[] readings = new int[n];
             readings[0] = machine.distinctSymbols();
@@ -77,18 +74,18 @@ public class SlotMachineContest {
                 spinAndLog(machine, i, 1, actions);
                 readings[t] = machine.distinctSymbols();
             }
-            
-            spinAndLog(machine, i, 1, actions); 
+
+            spinAndLog(machine, i, 1, actions);
 
             int bestT = 0, bestReading = readings[0];
             for (int t = 1; t < n; t++) {
                 if (readings[t] > bestReading) { bestReading = readings[t]; bestT = t; }
             }
-            spinAndLog(machine, i, bestT, actions); //mejor T aplicado
+            spinAndLog(machine, i, bestT, actions); // mejor T aplicado
         }
     }
 
-    private void spinAndLog(SlotMachine machine, int wheel, int steps, List<int[]> actions) {
+    private static void spinAndLog(SlotMachine machine, int wheel, int steps, List<int[]> actions) {
         if (steps == 0) return;
         machine.spin(wheel, steps);
         actions.add(new int[]{wheel, steps});

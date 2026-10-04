@@ -1,8 +1,11 @@
 #BlueJ class context
-#Tue Sep 22 19:17:08 COT 2026
+#Sun Oct 04 17:30:52 COT 2026
 comment0.target=SlotMachineContest
 comment1.params=n
 comment1.target=int[][] solve(int)
 comment2.params=n
 comment2.target=void simulate(int)
-numComments=3
+comment3.params=n visible
+comment3.target=int[][] run(int, boolean)
+comment3.text=\r\n Crea la m\u00E1quina, ejecuta el algoritmo y devuelve la lista de acciones {rueda, pasos}.\r\n @param n n\u00FAmero de ruedas y de s\u00EDmbolos\r\n @param visible true para dibujar la m\u00E1quina en el canvas, false para no dibujarla\r\n
+numComments=4

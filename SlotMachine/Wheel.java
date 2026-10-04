@@ -2,12 +2,13 @@ import java.util.*;
 
 /**
  * Una rueda de la máquina. Todas las instancias comparten la misma cinta
- * de símbolos (lista estática); cada rueda mantiene su propia posición
- * actual dentro de esa cinta compartida.
+ * lógica de símbolos (lista estática); cada rueda mantiene su propia posición
+ * actual dentro de esa cinta y su propia lista de símbolos VISUALES.
  */
 public class Wheel {
-    private static List<Symbol> symbols = new ArrayList<>(); 
-    private Symbol currentSymbol;
+    private static List<Symbol> symbols = new ArrayList<>();
+    private List<Symbol> visualSymbols = new ArrayList<>();
+    private Symbol currentSymbol;    
     private int wheelNumber;
     private boolean isVisible;
     private boolean isLocked;
@@ -18,9 +19,6 @@ public class Wheel {
     private static final int SIZE = 90;
     private static final int MARGIN = 20;
 
-    // Añade este método para limpiar la memoria fantasma de BlueJ
-
-
     public Wheel(int wheelNumber) {
         this.currentSymbol = null;
         this.wheelNumber = wheelNumber;
@@ -29,37 +27,96 @@ public class Wheel {
         this.currentPositionIndex = 0;
         this.xPosition = 120 + ((wheelNumber - 1) * (SIZE + MARGIN));
         this.yPosition = 120;
-        
-        
-        if (symbols != null && !symbols.isEmpty()) {
+
+        syncVisuals();
+
+        if (!symbols.isEmpty()) {
             this.currentSymbol = symbols.get(0);
             this.currentPositionIndex = 0;
         }
     }
-    
-        public static void clearSharedTape() {
-        if (symbols != null) {
-            symbols.clear();
+
+    public static void clearSharedTape() {
+        symbols.clear();
+    }
+
+
+    /**
+     * Reconcilia visualSymbols con la cinta compartida (por color):
+     * reutiliza visuales existentes, crea los faltantes y descarta los sobrantes.
+     * También reubica currentPositionIndex si la cinta cambió.
+     * Es idempotente: se puede llamar las veces que haga falta.
+     */
+    void syncVisuals() {
+        List<Symbol> synced = new ArrayList<>();
+        for (Symbol logical : symbols) {
+            Symbol visual = findVisual(logical.getColor());
+            synced.add(visual != null ? visual : new Symbol(logical.getColor(), wheelNumber));
+        }
+
+        for (Symbol old : visualSymbols) {
+            if (!synced.contains(old)) old.makeInvisible(); // visual huérfano
+        }
+        visualSymbols = synced;
+
+        if (currentSymbol != null) {
+            int idx = symbols.indexOf(currentSymbol);
+            if (idx >= 0) {
+                currentPositionIndex = idx; // la cinta pudo desplazar índices
+            } else {                        // el símbolo actual fue eliminado
+                currentSymbol = symbols.isEmpty() ? null : symbols.get(0);
+                currentPositionIndex = 0;
+                if (isVisible && currentSymbol != null) draw();
+            }
         }
     }
 
-    /**
-     * Devuelve en qué número está esta rueda ahora mismo.
-     */
+    private Symbol findVisual(String color) {
+        for (Symbol v : visualSymbols) {
+            if (v.getColor().equals(color)) return v;
+        }
+        return null;
+    }
+
+    private Symbol currentVisual() {
+        if (currentSymbol == null || currentPositionIndex >= visualSymbols.size()) return null;
+        return visualSymbols.get(currentPositionIndex);
+    }
+
+    private void hideCurrentVisual() {
+        Symbol v = currentVisual();
+        if (v != null) v.makeInvisible();
+    }
+
+    /** Cambia el símbolo actual a la posición dada de la cinta y lo redibuja. */
+    private void moveTo(int index) {
+        hideCurrentVisual();
+        currentPositionIndex = index;
+        currentSymbol = symbols.get(index);
+        draw();
+    }
+
+    // ===================== Consultas =====================
+
     public int getWheelNumber() { return wheelNumber; }
-
-    /**
-     * Devuelve en qué posición horizontal está dibujada la rueda.
-     */
     public int getXPosition() { return xPosition; }
+    public Symbol getCurrentSymbol() { return currentSymbol; }
+    public int getSymbolCount() { return symbols.size(); }
+    public List<Symbol> getSymbols() { return new ArrayList<>(symbols); }
 
-    /**
-     * Agrega un símbolo nuevo a la cinta compartida. Si es el primero
-     * que llega, se queda como el símbolo que se ve por ahora en esta rueda.
-     */
+    public boolean hasColor(String color) {
+        for (Symbol s : symbols) {
+            if (s.getColor().equals(color)) return true;
+        }
+        return false;
+    }
+
+    // ===================== Cinta =====================
+
     public boolean addSymbol(Symbol symbol) {
         if (symbol == null) return false;
         symbols.add(symbol);
+        syncVisuals(); // el visual debe existir antes de poder dibujarlo
         if (currentSymbol == null) {
             currentSymbol = symbol;
             currentPositionIndex = symbols.size() - 1;
@@ -68,98 +125,30 @@ public class Wheel {
         return true;
     }
 
-    /**
-     * Quita el símbolo de la cinta compartida, reemplazándolo si era el actual.
-     */
     public boolean removeSymbol(Symbol symbol) {
         boolean removed = symbols.remove(symbol);
-        if (removed && symbol == currentSymbol) {
-            if (isVisible) symbol.makeInvisible();
-            currentSymbol = symbols.isEmpty() ? null : symbols.get(0);
-            currentPositionIndex = 0;
-            if (isVisible && currentSymbol != null) draw();
-        }
+        if (removed) syncVisuals(); // oculta el visual, reubica índice y redibuja si hace falta
         return removed;
     }
 
-    /**
-     * Muestra cuál es el símbolo que esta rueda tiene en pantalla ahora.
-     */
-    public Symbol getCurrentSymbol() { return currentSymbol; }
+    // ===================== Movimiento =====================
 
-    /**
-     * Dice cuántos símbolos hay en la cinta compartida.
-     */
-    public int getSymbolCount() { return symbols.size(); }
-
-    /**
-     * Devuelve los símbolos de la cinta compartida, en el orden en que
-     * se fueron agregando.
-     */
-    public List<Symbol> getSymbols() { return new ArrayList<>(symbols); }
-
-    /**
-     * Revisa si la cinta compartida ya tiene un símbolo de este color.
-     */
-    public boolean hasColor(String color) {
-        for (Symbol s : symbols) {
-            if (s.getColor().equals(color)) return true;
-        }
-        return false;
-    }
-
-    /**
-     * Gira la rueda: elige un símbolo al azar entre los de la cinta
-     * compartida y lo deja mostrado en esta rueda.
-     */
     public Symbol spin() {
         if (symbols.isEmpty()) return null;
-        if (isVisible && currentSymbol != null) currentSymbol.makeInvisible();
-        currentPositionIndex = (int) (Math.random() * symbols.size());
-        currentSymbol = symbols.get(currentPositionIndex);
-        if (isVisible) draw();
+        moveTo((int) (Math.random() * symbols.size()));
         return currentSymbol;
     }
 
-    /**
-     * Pone como símbolo actual uno que existe en la cinta compartida,
-     * buscándolo por color.
-     */
     public boolean placeSymbol(String color) {
         for (int i = 0; i < symbols.size(); i++) {
-            Symbol s = symbols.get(i);
-            if (s.getColor().equals(color)) {
-                if (isVisible && currentSymbol != null) currentSymbol.makeInvisible();
-                currentSymbol = s;
-                currentPositionIndex = i;
-                if (isVisible) draw();
+            if (symbols.get(i).getColor().equals(color)) {
+                moveTo(i);
                 return true;
             }
         }
         return false;
     }
 
-    /**
-     * Fija esta rueda: mientras esté fija, spin() de la máquina no
-     * debe modificarla.
-     */
-    public void hold() { isLocked = true; }
-
-    /**
-     * Suelta esta rueda: vuelve a girar normalmente con spin().
-     */
-    public void release() { isLocked = false; }
-
-    /**
-     * Dice si esta rueda está fija actualmente.
-     */
-    public boolean isHeld() { return isLocked; } // corregido: antes devolvía true fijo
-
-    /**
-     * Rota la rueda un número de pasos sobre la cinta compartida.
-     * steps es el número de pasos a avanzar (negativo para retroceder).
-     * Retorna el símbolo que queda mostrado al final del recorrido.
-     */
     public Symbol spin(int steps) {
         if (symbols.isEmpty()) return null;
 
@@ -167,20 +156,23 @@ public class Wheel {
         int totalSteps = Math.abs(steps);
 
         for (int i = 0; i < totalSteps; i++) {
-            currentPositionIndex = Math.floorMod(currentPositionIndex + direction, symbols.size());
-            currentSymbol = symbols.get(currentPositionIndex);
-            draw();
+            moveTo(Math.floorMod(currentPositionIndex + direction, symbols.size()));
         }
         return currentSymbol;
     }
 
+    public void hold() { isLocked = true; }
+    public void release() { isLocked = false; }
+    public boolean isHeld() { return isLocked; }
+
     /**
-     * Intercambia en qué parte de la cinta compartida está posicionada
-     * cada rueda (símbolo actual e índice), sin mover su posición visual
-     * ni su número. Como la cinta ya es compartida, no hay nada que
-     * mover a nivel de listas.
+     * Intercambia la posición en la cinta de ambas ruedas. Como cada rueda
+     * tiene sus propios visuales, se ocultan antes del intercambio.
      */
     void swapContentWith(Wheel other) {
+        this.hideCurrentVisual();
+        other.hideCurrentVisual();
+
         Symbol tempCurrent = this.currentSymbol;
         int tempPosition = this.currentPositionIndex;
 
@@ -194,68 +186,45 @@ public class Wheel {
         if (other.isVisible) other.draw();
     }
 
-    /**
-     * Hace que la rueda aparezca en el canvas.
-     */
+    // ===================== Visibilidad / posición =====================
+
     public void makeVisible() { isVisible = true; draw(); }
-
-    /**
-     * Hace que la rueda desaparezca del canvas.
-     */
     public void makeInvisible() { erase(); isVisible = false; }
-
-    /**
-     * Dice si la rueda está visible en este momento.
-     */
     public boolean isVisible() { return isVisible; }
 
-    /**
-     * Cambia la posición de la rueda en el canvas y la vuelve a dibujar
-     * si está visible.
-     */
     public void setPosition(int x, int y) {
         this.xPosition = x;
         this.yPosition = y;
         if (isVisible) draw();
     }
 
-    /**
-     * Renumera esta rueda y su posición base (misma fórmula que el
-     * constructor). Propaga el nuevo número a todos los símbolos de
-     * la cinta compartida.
-     */
     public void setWheelIndex(int newIndex) {
         this.wheelNumber = newIndex;
         this.xPosition = 120 + ((newIndex - 1) * (SIZE + MARGIN));
-        for (Symbol s : symbols) {
-            s.setWheelIndex(newIndex);
-        }
+        for (Symbol s : symbols) s.setWheelIndex(newIndex);      
+        for (Symbol v : visualSymbols) v.setWheelIndex(newIndex);  
     }
 
-    /*
-     * Dibuja el cuadrado de la rueda y el símbolo que tiene puesto ahora.
-     */
+
     private void draw() {
         if (isVisible) {
             Canvas canvas = Canvas.getCanvas();
             canvas.draw(this, "gray",
                 new java.awt.Rectangle(xPosition, yPosition, SIZE, SIZE));
             canvas.wait(10);
-            if (currentSymbol != null) {
-                currentSymbol.setPosition(xPosition + MARGIN, yPosition + MARGIN);
-                currentSymbol.makeVisible();
+            Symbol visual = currentVisual();
+            if (visual != null) {
+                visual.setPosition(xPosition + MARGIN, yPosition + MARGIN);
+                visual.makeVisible();
             }
         }
     }
 
-    /*
-     * Borra la rueda y su símbolo del canvas.
-     */
     private void erase() {
         if (isVisible) {
             Canvas canvas = Canvas.getCanvas();
             canvas.erase(this);
-            if (currentSymbol != null) currentSymbol.makeInvisible();
+            hideCurrentVisual();
         }
     }
 

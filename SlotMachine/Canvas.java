@@ -109,27 +109,24 @@ public class Canvas{
         redraw();
     }
 
+
     /**
-     * Set the foreground colour of the Canvas.
-     * @param  newColour   the new colour for the foreground of the Canvas 
+     * Define el color de dibujo. Acepta nombres con sufijo ejemplo:("red-3")
+     * solo se usa el prefijo anterior al guion para elegir el color.
      */
     public void setForegroundColor(String colorString){
-        if(colorString.equals("red"))
-            graphic.setColor(Color.red);
-        else if(colorString.equals("black"))
-            graphic.setColor(Color.black);
-        else if(colorString.equals("blue"))
-            graphic.setColor(Color.blue);
-        else if(colorString.equals("yellow"))
-            graphic.setColor(Color.yellow);
-        else if(colorString.equals("green"))
-            graphic.setColor(Color.green);
-        else if(colorString.equals("magenta"))
-            graphic.setColor(Color.magenta);
-        else if(colorString.equals("white"))
-            graphic.setColor(Color.white);
-        else
-            graphic.setColor(Color.black);
+        int dash = colorString.indexOf('-');
+        String base = (dash >= 0) ? colorString.substring(0, dash) : colorString;
+    
+        switch (base) {
+            case "red":     graphic.setColor(Color.red);     break;
+            case "blue":    graphic.setColor(Color.blue);    break;
+            case "yellow":  graphic.setColor(Color.yellow);  break;
+            case "green":   graphic.setColor(Color.green);   break;
+            case "magenta": graphic.setColor(Color.magenta); break;
+            case "white":   graphic.setColor(Color.white);   break;
+            default:        graphic.setColor(Color.black);
+        }
     }
 
     /**

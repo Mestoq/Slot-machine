@@ -1,9 +1,5 @@
 #BlueJ class context
-<<<<<<< Updated upstream
-#Sun Sep 20 18:01:46 COT 2026
-=======
-#Thu Sep 10 17:50:41 CST 2026
->>>>>>> Stashed changes
+#Sun Oct 04 17:28:13 COT 2026
 comment0.target=Canvas
 comment0.text=\r\n Canvas is a class to allow for simple graphical drawing on a canvas.\r\n This is a modification of the general purpose Canvas, specially made for\r\n the BlueJ "shapes" example. \r\n\r\n @author\: Bruce Quig\r\n @author\: Michael Kolling (mik)\r\n\r\n @version\: 1.6 (shapes)\r\n
 comment1.target=Canvas getCanvas()
@@ -25,7 +21,7 @@ comment5.target=void erase(java.lang.Object)
 comment5.text=\r\n Erase a given shape's from the screen.\r\n @param  referenceObject  the shape object to be erased \r\n
 comment6.params=colorString
 comment6.target=void setForegroundColor(java.lang.String)
-comment6.text=\r\n Set the foreground colour of the Canvas.\r\n @param  newColour   the new colour for the foreground of the Canvas \r\n
+comment6.text=\r\n Define el color de dibujo. Acepta nombres con sufijo ejemplo\:("red-3")\r\n solo se usa el prefijo anterior al guion para elegir el color.\r\n
 comment7.params=milliseconds
 comment7.target=void wait(int)
 comment7.text=\r\n Wait for a specified number of milliseconds before finishing.\r\n This provides an easy way to specify a small delay which can be\r\n used when producing animations.\r\n @param  milliseconds  the number \r\n

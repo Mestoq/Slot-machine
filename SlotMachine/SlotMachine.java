@@ -143,28 +143,31 @@ public class SlotMachine {
                     return;
                 }
                 result = w.addSymbol(new Symbol(color, wheelNumber));
+                syncAllVisuals(); // la cinta es compartida: todas las ruedas necesitan su visual
                 return;
             }
         }
         showErrorMessage("Wheel " + wheelNumber + " not found");
         result = false;
     }
-
-    /**
-     * Elimina de la cinta compartida el primer símbolo que tenga este color.
-     * (Ajustado a la firma del diagrama: delSymbol(symbol : String) : void)
-     */
+    
     public void delSymbol(String color) {
         for (Wheel w : wheels) {
             for (Symbol s : w.getSymbols()) {
                 if (s.getColor().equals(color)) {
                     result = w.removeSymbol(s);
+                    syncAllVisuals();
                     return;
                 }
             }
         }
         showErrorMessage("Symbol " + color + " not found");
         result = false;
+    }
+    
+    /** Propaga a todas las ruedas los cambios de la cinta compartida. */
+    private void syncAllVisuals() {
+        for (Wheel w : wheels) w.syncVisuals();
     }
 
     public void placeSymbol(int wheelNumber, String color) {
