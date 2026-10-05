@@ -125,6 +125,7 @@ public class Canvas{
             case "green":   graphic.setColor(Color.green);   break;
             case "magenta": graphic.setColor(Color.magenta); break;
             case "white":   graphic.setColor(Color.white);   break;
+            case "cyan":    graphic.setColor(Color.cyan);    break;
             default:        graphic.setColor(Color.black);
         }
     }

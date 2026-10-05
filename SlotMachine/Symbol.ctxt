@@ -1,17 +1,29 @@
 #BlueJ class context
-#Sun Oct 04 17:28:13 COT 2026
+#Sun Oct 04 22:00:40 COT 2026
 comment0.target=Symbol
-comment0.text=\r\n Un s\u00EDmbolo que se muestra en una rueda de la m\u00E1quina.\r\n Se identifica por su color y sabe a qu\u00E9 rueda pertenece.\r\n
+comment0.text=\r\n Un s\u00EDmbolo que se muestra en una rueda de la m\u00E1quina (tipo "normal").\r\n Se identifica por su color. Los dem\u00E1s tipos lo extienden y sobrescriben\r\n action() (qu\u00E9 hace al ser seleccionado) y copy() (crear un visual del mismo tipo).\r\n
 comment1.params=color wheelIndex
 comment1.target=Symbol(java.lang.String, int)
-comment2.target=java.lang.String getColor()
-comment3.target=int getWheelIndex()
-comment4.params=newIndex
-comment4.target=void setWheelIndex(int)
-comment5.params=x y
-comment5.target=void setPosition(int, int)
-comment6.target=void makeVisible()
-comment7.target=void makeInvisible()
-comment8.target=boolean isVisible()
-comment9.target=java.lang.String toString()
-numComments=10
+comment10.params=x y
+comment10.target=void setPosition(int, int)
+comment10.text=Ubica el s\u00EDmbolo centrado en la celda (x, y), sin importar su di\u00E1metro actual.
+comment11.target=void makeVisible()
+comment12.target=void makeInvisible()
+comment13.target=boolean isVisible()
+comment14.target=java.lang.String toString()
+comment2.target=void action()
+comment2.text=\r\n Qu\u00E9 hace el s\u00EDmbolo cuando la rueda lo deja seleccionado.\r\n El s\u00EDmbolo normal no hace nada; cada subtipo responde a su manera.\r\n
+comment3.params=wheelIndex
+comment3.target=Symbol copy(int)
+comment3.text=Crea un s\u00EDmbolo nuevo del MISMO tipo y color (se usa para los visuales de cada rueda).
+comment4.target=void pause()
+comment4.text=Espera un momento para que el efecto se note, solo si el s\u00EDmbolo se est\u00E1 viendo.
+comment5.target=int getDiameter()
+comment6.params=newDiameter
+comment6.target=void resize(int)
+comment6.text=Cambia el di\u00E1metro del c\u00EDrculo; el centrado lo resuelve setPosition.
+comment7.target=java.lang.String getColor()
+comment8.target=int getWheelIndex()
+comment9.params=newIndex
+comment9.target=void setWheelIndex(int)
+numComments=15

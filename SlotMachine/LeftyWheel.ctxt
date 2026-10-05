@@ -1,0 +1,15 @@
+#BlueJ class context
+#Sun Oct 04 21:43:10 COT 2026
+comment0.target=LeftyWheel
+comment1.params=wheelNumber
+comment1.target=LeftyWheel(int)
+comment2.params=left
+comment2.target=Symbol spin(Wheel)
+comment3.params=left steps
+comment3.target=Symbol spin(Wheel, int)
+comment4.params=left
+comment4.target=boolean hasSomethingToCopy(Wheel)
+comment5.params=left
+comment5.target=Symbol copy(Wheel)
+comment5.text=Deja en esta rueda el mismo s\u00EDmbolo que muestra la vecina.
+numComments=6

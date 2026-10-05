@@ -1,0 +1,14 @@
+#BlueJ class context
+#Sun Oct 04 22:00:40 COT 2026
+comment0.target=EphemeralSymbol
+comment1.params=color wheelIndex
+comment1.target=EphemeralSymbol(java.lang.String, int)
+comment2.target=void action()
+comment2.text=Al ser seleccionado se encoge (con una pausa para que se note).
+comment3.params=wheelIndex
+comment3.target=Symbol copy(int)
+comment4.params=x y
+comment4.target=void setPosition(int, int)
+comment5.target=void makeVisible()
+comment6.target=void makeInvisible()
+numComments=7

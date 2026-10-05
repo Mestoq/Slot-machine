@@ -26,7 +26,7 @@ public class SlotMachine {
         this.yPosition = 100;
         this.result = false;
     }
-    
+
     public SlotMachine(int n) {
         this.wheels = new ArrayList<>();
         this.isVisible = false;
@@ -36,7 +36,6 @@ public class SlotMachine {
         this.yPosition = 100;
         this.result = false;
 
-        
         Wheel.clearSharedTape();
 
         String[] sharedColors = new String[n];
@@ -50,28 +49,28 @@ public class SlotMachine {
             }
         }
 
-        // Instanciar las ruedas
+        
         for (int i = 1; i <= n; i++) {
             Wheel currentWheel = new Wheel(i);
-            
+
             if (i == 1) {
                 for (int j = 0; j < n; j++) {
                     currentWheel.addSymbol(new Symbol(sharedColors[j], i));
                 }
             }
-            
+
             wheels.add(currentWheel);
         }
 
-        // Desorganizar las ruedas aleatoriamente 
+        
         boolean allAligned = true;
         for (int i = 0; i < n; i++) {
             int randomSteps = random.nextInt(n);
             wheels.get(i).spin(randomSteps);
-            
+
             String firstWheelColor = wheels.get(0).getCurrentSymbol().getColor();
             String currentWheelColor = wheels.get(i).getCurrentSymbol().getColor();
-            
+
             if (i > 0 && !currentWheelColor.equals(firstWheelColor)) {
                 allAligned = false;
             }
@@ -81,12 +80,47 @@ public class SlotMachine {
             wheels.get(0).spin(1);
         }
     }
-    
+
     public boolean ok() {
         return result;
     }
 
+
+    
+
+
+    private Wheel newWheel(String type, int wheelNumber) {
+        if (type == null) return null;
+        switch (type) {
+            case "normal": return new Wheel(wheelNumber);
+            case "lefty":  return new LeftyWheel(wheelNumber);
+            case "rebel":  return new RebelWheel(wheelNumber);
+            case "tired":  return new TiredWheel(wheelNumber);
+            default:       return null;
+        }
+    }
+
+
+    private Symbol newSymbol(String type, String color, int wheelNumber) {
+        if (type == null) return null;
+        switch (type) {
+            case "normal":    return new Symbol(color, wheelNumber);
+            case "ephemeral": return new EphemeralSymbol(color, wheelNumber);
+            case "shy":       return new ShySymbol(color, wheelNumber);
+            default:          return null;
+        }
+    }
+
+    
+    
+    
+    
+
     public void addWheel(int wheelNumber) {
+        addWheel("normal", wheelNumber);
+    }
+
+    public void addWheel(String type, int wheelNumber) {
         for (Wheel w : wheels) {
             if (w.getWheelNumber() == wheelNumber) {
                 showErrorMessage("Wheel " + wheelNumber + " already exists");
@@ -94,7 +128,12 @@ public class SlotMachine {
                 return;
             }
         }
-        Wheel wheel = new Wheel(wheelNumber);
+        Wheel wheel = newWheel(type, wheelNumber);
+        if (wheel == null) {
+            showErrorMessage("Unknown wheel type: " + type);
+            result = false;
+            return;
+        }
         wheels.add(wheel);
 
         if (isVisible) {
@@ -109,6 +148,11 @@ public class SlotMachine {
         for (int i = 0; i < wheels.size(); i++) {
             if (wheels.get(i).getWheelNumber() == wheelNumber) {
                 Wheel wheel = wheels.get(i);
+                if (wheel.isRebel()) {
+                    showErrorMessage("Wheel " + wheelNumber + " is rebel and cannot be deleted");
+                    result = false;
+                    return;
+                }
                 if (isVisible) wheel.makeInvisible();
                 wheels.remove(i);
                 for (int j = 0; j < wheels.size(); j++) {
@@ -134,7 +178,15 @@ public class SlotMachine {
         }
     }
 
+    
+    
+    
+
     public void addSymbol(int wheelNumber, String color) {
+        addSymbol("normal", wheelNumber, color);
+    }
+
+    public void addSymbol(String type, int wheelNumber, String color) {
         for (Wheel w : wheels) {
             if (w.getWheelNumber() == wheelNumber) {
                 if (w.hasColor(color)) {
@@ -142,15 +194,25 @@ public class SlotMachine {
                     result = false;
                     return;
                 }
-                result = w.addSymbol(new Symbol(color, wheelNumber));
-                syncAllVisuals(); // la cinta es compartida: todas las ruedas necesitan su visual
+                Symbol symbol = newSymbol(type, color, wheelNumber);
+                if (symbol == null) {
+                    showErrorMessage("Unknown symbol type: " + type);
+                    result = false;
+                    return;
+                }
+                result = w.addSymbol(symbol);
+                syncAllVisuals(); 
                 return;
             }
         }
         showErrorMessage("Wheel " + wheelNumber + " not found");
         result = false;
     }
-    
+
+    /**
+     * Elimina de la cinta compartida el primer símbolo que tenga este color.
+     * (Ajustado a la firma del diagrama: delSymbol(symbol : String) : void)
+     */
     public void delSymbol(String color) {
         for (Wheel w : wheels) {
             for (Symbol s : w.getSymbols()) {
@@ -164,7 +226,7 @@ public class SlotMachine {
         showErrorMessage("Symbol " + color + " not found");
         result = false;
     }
-    
+
     /** Propaga a todas las ruedas los cambios de la cinta compartida. */
     private void syncAllVisuals() {
         for (Wheel w : wheels) w.syncVisuals();
@@ -184,6 +246,27 @@ public class SlotMachine {
         result = false;
     }
 
+    
+    
+    
+
+    /** @return la rueda con el número n-1, o null si no existe. */
+    private Wheel leftOf(Wheel target) {
+        for (Wheel w : wheels) {
+            if (w.getWheelNumber() == target.getWheelNumber() - 1) return w;
+        }
+        return null;
+    }
+
+
+    
+    
+    private List<Wheel> sortedWheels() {
+        List<Wheel> sorted = new ArrayList<>(wheels);
+        sorted.sort((a, b) -> a.getWheelNumber() - b.getWheelNumber());
+        return sorted;
+    }
+
     public void spin() {
         for (Wheel wheel : wheels) {
             if (!wheel.isHeld() && wheel.getSymbolCount() == 0) {
@@ -193,9 +276,11 @@ public class SlotMachine {
                 return;
             }
         }
+        
+        // Las ruedas están en orden: la n-1 gira antes que la n
         for (Wheel wheel : wheels) {
             if (!wheel.isHeld()) {
-                wheel.spin();
+                wheel.spin(leftOf(wheel));
             }
         }
         if (isVisible) refreshActiveWheels();
@@ -210,51 +295,8 @@ public class SlotMachine {
                     result = false;
                     return;
                 }
-                w.spin();
+                w.spin(leftOf(w));
                 if (isVisible) refreshActiveWheels();
-                result = true;
-                return;
-            }
-        }
-        showErrorMessage("Wheel " + wheel + " not found");
-        result = false;
-    }
-
-    public void swap(int wheelNumber1, int wheelNumber2) {
-        Wheel w1 = null, w2 = null;
-        for (Wheel w : wheels) {
-            if (w.getWheelNumber() == wheelNumber1) w1 = w;
-            if (w.getWheelNumber() == wheelNumber2) w2 = w;
-        }
-        if (w1 == null || w2 == null) {
-            showErrorMessage("One or both wheels not found");
-            result = false;
-            return;
-        }
-        w1.swapContentWith(w2);
-        result = true;
-    }
-
-    public void lock(int wheel) {
-        for (Wheel w : wheels) {
-            if (w.getWheelNumber() == wheel) {
-                w.hold();
-                result = true;
-                return;
-            }
-        }
-        showErrorMessage("Wheel " + wheel + " not found");
-        result = false;
-    }
-
-    /**
-     * Renombrado de unLock a unlock para ajustarse al diagrama
-     * (unlock(wheel : int) : void).
-     */
-    public void unlock(int wheel) {
-        for (Wheel w : wheels) {
-            if (w.getWheelNumber() == wheel) {
-                w.release();
                 result = true;
                 return;
             }
@@ -271,7 +313,7 @@ public class SlotMachine {
                     result = false;
                     return;
                 }
-                w.spin(steps);
+                w.spin(leftOf(w), steps);
                 if (isVisible) refreshActiveWheels();
                 result = true;
                 return;
@@ -281,35 +323,87 @@ public class SlotMachine {
         result = false;
     }
 
-    /**
-     * Deja la máquina en la configuración dada (todo o nada).
-     * Firma ajustada al diagrama: spin(setSymbols : String[]) : void.
-     */
+
+    
     public void spin(String[] setSymbols) {
         if (setSymbols.length != wheels.size()) {
             showErrorMessage("Configuration size does not match wheel count");
             result = false;
             return;
         }
-
-        List<Wheel> sorted = new ArrayList<>(wheels);
-        sorted.sort((a, b) -> a.getWheelNumber() - b.getWheelNumber());
-
+    
         for (int i = 0; i < setSymbols.length; i++) {
-            if (!sorted.get(i).hasColor(setSymbols[i].trim())) {
-                showErrorMessage("Wheel " + sorted.get(i).getWheelNumber() +
+            if (!wheels.get(i).hasColor(setSymbols[i].trim())) {
+                showErrorMessage("Wheel " + wheels.get(i).getWheelNumber() +
                         " has no " + setSymbols[i].trim() + " symbol");
                 result = false;
                 return;
             }
         }
-
+    
         for (int i = 0; i < setSymbols.length; i++) {
-            sorted.get(i).placeSymbol(setSymbols[i].trim());
+            wheels.get(i).placeSymbol(setSymbols[i].trim());
         }
         if (isVisible) refreshActiveWheels();
         result = true;
     }
+
+
+    
+
+    public void swap(int wheelNumber1, int wheelNumber2) {
+        Wheel w1 = null, w2 = null;
+        for (Wheel w : wheels) {
+            if (w.getWheelNumber() == wheelNumber1) w1 = w;
+            if (w.getWheelNumber() == wheelNumber2) w2 = w;
+        }
+        if (w1 == null || w2 == null) {
+            showErrorMessage("One or both wheels not found");
+            result = false;
+            return;
+        }
+        if (w1.isRebel() || w2.isRebel()) {
+            showErrorMessage("A rebel wheel cannot be swapped");
+            result = false;
+            return;
+        }
+        w1.swapContentWith(w2);
+        result = true;
+    }
+
+    public void lock(int wheel) {
+        for (Wheel w : wheels) {
+            if (w.getWheelNumber() == wheel) {
+                if (w.isRebel()) {
+                    showErrorMessage("Wheel " + wheel + " is rebel and cannot be locked");
+                    result = false;
+                    return;
+                }
+                w.hold();
+                result = true;
+                return;
+            }
+        }
+        showErrorMessage("Wheel " + wheel + " not found");
+        result = false;
+    }
+
+
+    public void unlock(int wheel) {
+        for (Wheel w : wheels) {
+            if (w.getWheelNumber() == wheel) {
+                w.release();
+                result = true;
+                return;
+            }
+        }
+        showErrorMessage("Wheel " + wheel + " not found");
+        result = false;
+    }
+
+
+    
+    
 
     public String consultSymbols() {
         StringBuilder sb = new StringBuilder();
@@ -320,17 +414,13 @@ public class SlotMachine {
         return sb.toString();
     }
 
-    /**
-     * Devuelve todos los símbolos de la cinta compartida, en el orden
-     * en el que fueron agregados (sin distinción por rueda, ya que la
-     * cinta es una sola). Firma ajustada al diagrama: symbols() : String[].
-     */
+    
     public String[] symbols() {
         if (wheels.isEmpty()) {
             result = false;
             return new String[0];
         }
-        List<Symbol> list = wheels.get(0).getSymbols(); // cualquier rueda ve la misma cinta
+        List<Symbol> list = wheels.get(0).getSymbols(); 
         String[] colors = new String[list.size()];
         for (int i = 0; i < list.size(); i++) {
             colors[i] = list.get(i).getColor();
@@ -339,36 +429,23 @@ public class SlotMachine {
         return colors;
     }
 
-    /**
-     * Colores de los símbolos visibles en todas las ruedas, ordenados
-     * de izquierda a derecha (por número de rueda). Mismo orden que
-     * antes; solo cambia el tipo de retorno a String[].
-     */
+    
     public String[] configuration() {
-        List<Wheel> sorted = new ArrayList<>(wheels);
-        sorted.sort((a, b) -> a.getWheelNumber() - b.getWheelNumber());
-        String[] colors = new String[sorted.size()];
-        for (int i = 0; i < sorted.size(); i++) {
-            Symbol current = sorted.get(i).getCurrentSymbol();
+        String[] colors = new String[wheels.size()];
+        for (int i = 0; i < wheels.size(); i++) {
+            Symbol current = wheels.get(i).getCurrentSymbol();
             colors[i] = current != null ? current.getColor() : "empty";
         }
         result = true;
         return colors;
     }
 
-    /**
-     * Cuenta cuántos símbolos DISTINTOS se están mostrando actualmente,
-     * leyendo directamente el currentSymbol de cada rueda (no la cinta
-     * completa, y sin pasar por configuration()).
-     * Esta es la señal "k" que reporta el amigo en el problema de la maratón.
-     * Precondición del contexto de uso: SlotMachine(n) garantiza que toda
-     * rueda siempre tiene un currentSymbol asignado (invariante 1 rueda : 1 símbolo).
-     */
+
     public int distinctSymbols() {
         Set<String> visible = new HashSet<>();
         for (Wheel w : wheels) {
             Symbol current = w.getCurrentSymbol();
-            if (current != null) {          // guarda defensiva, no debería dispararse nunca en este contexto
+            if (current != null) {          
                 visible.add(current.getColor());
             }
         }
@@ -388,6 +465,9 @@ public class SlotMachine {
         }
         return true;
     }
+
+
+    
 
     public void makeVisible() {
         if (isVisible) {
@@ -427,6 +507,9 @@ public class SlotMachine {
         makeInvisible();
         System.out.println("Slot Machine Simulator terminated.");
     }
+
+
+    
 
     private void draw() {
         if (isVisible) {
