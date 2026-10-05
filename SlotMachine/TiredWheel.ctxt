@@ -1,5 +1,5 @@
 #BlueJ class context
-#Sun Oct 04 21:43:10 COT 2026
+#Sun Oct 04 22:50:20 COT 2026
 comment0.target=TiredWheel
 comment0.text=\r\n Rueda cansada\: gira la mitad de los pasos que se le piden y su animaci\u00F3n\r\n de giro es m\u00E1s lenta.\r\n
 comment1.params=wheelNumber

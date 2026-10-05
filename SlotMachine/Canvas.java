@@ -110,25 +110,30 @@ public class Canvas{
     }
 
 
-    /**
-     * Define el color de dibujo. Acepta nombres con sufijo ejemplo:("red-3")
-     * solo se usa el prefijo anterior al guion para elegir el color.
-     */
+        /**
+         * Define el color de dibujo. Acepta nombres con sufijo ejemplo:("red-3")
+         * solo se usa el prefijo anterior al guion para elegir el color.
+         */
     public void setForegroundColor(String colorString){
         int dash = colorString.indexOf('-');
         String base = (dash >= 0) ? colorString.substring(0, dash) : colorString;
     
         switch (base) {
-            case "red":     graphic.setColor(Color.red);     break;
-            case "blue":    graphic.setColor(Color.blue);    break;
-            case "yellow":  graphic.setColor(Color.yellow);  break;
-            case "green":   graphic.setColor(Color.green);   break;
-            case "magenta": graphic.setColor(Color.magenta); break;
-            case "white":   graphic.setColor(Color.white);   break;
-            case "cyan":    graphic.setColor(Color.cyan);    break;
+            case "red":     graphic.setColor(Color.red);              break;
+            case "blue":    graphic.setColor(Color.blue);             break;
+            case "yellow":  graphic.setColor(Color.yellow);           break;
+            case "green":   graphic.setColor(Color.green);            break;
+            case "magenta": graphic.setColor(Color.magenta);          break;
+            case "white":   graphic.setColor(Color.white);            break;
+            case "black":   graphic.setColor(Color.black);            break;
+            case "gray":    graphic.setColor(Color.gray);             break;  
+            case "purple":  graphic.setColor(new Color(128, 0, 128)); break; 
+            case "orange":  graphic.setColor(Color.orange);           break;  
+            case "cyan":    graphic.setColor(Color.cyan);             break;  
             default:        graphic.setColor(Color.black);
         }
     }
+    
 
     /**
      * Wait for a specified number of milliseconds before finishing.
