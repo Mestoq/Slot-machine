@@ -1,0 +1,7 @@
+#BlueJ class context
+#Sun Oct 04 22:32:49 COT 2026
+comment0.target=SlotMachineC4Test
+comment0.text=\r\n Pruebas propias del ciclo 4\: rueda cansada y tipos de s\u00EDmbolo.\r\n
+comment1.target=void tiredWheelMovesHalfTheSteps()
+comment2.target=void symbolTypesAreAcceptedAndUnknownIsRejected()
+numComments=3
