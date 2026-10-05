@@ -69,7 +69,7 @@ Chacon, S., & Straub, B. (2014). Pro Git (2nd ed.). Apress. URL: https://git-scm
 Gemini (Google). (2026). "Debug para correcta compilacion y sintaxis en Java." proporciono análisis arquitectónico, patrones de diseño, debugging y buenas prácticas de Java.
 
 
-Ciclo 3
+Ciclo 4
 
 1. ¿Cuáles fueron los mini-ciclos definidos? Justifíquenlos.
 
