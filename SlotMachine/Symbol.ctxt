@@ -1,5 +1,5 @@
 #BlueJ class context
-#Sun Oct 04 22:00:40 COT 2026
+#Sun Oct 04 22:50:20 COT 2026
 comment0.target=Symbol
 comment0.text=\r\n Un s\u00EDmbolo que se muestra en una rueda de la m\u00E1quina (tipo "normal").\r\n Se identifica por su color. Los dem\u00E1s tipos lo extienden y sobrescriben\r\n action() (qu\u00E9 hace al ser seleccionado) y copy() (crear un visual del mismo tipo).\r\n
 comment1.params=color wheelIndex

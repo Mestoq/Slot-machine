@@ -18,14 +18,16 @@ public class SlotMachine {
     };
 
     public SlotMachine() {
-        this.wheels = new ArrayList<>();
-        this.isVisible = false;
-        this.canvas = null;
-        this.mainContainer = null;
-        this.xPosition = 100;
-        this.yPosition = 100;
-        this.result = false;
-    }
+    this.wheels = new ArrayList<>();
+    this.isVisible = false;
+    this.canvas = null;
+    this.mainContainer = null;
+    this.xPosition = 100;
+    this.yPosition = 100;
+    this.result = false;
+
+    Wheel.clearSharedTape();
+    }   
 
     public SlotMachine(int n) {
         this.wheels = new ArrayList<>();

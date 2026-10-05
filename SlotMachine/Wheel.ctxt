@@ -1,5 +1,5 @@
 #BlueJ class context
-#Sun Oct 04 22:30:26 COT 2026
+#Sun Oct 04 22:50:20 COT 2026
 comment0.target=Wheel
 comment0.text=\r\n Una rueda de la m\u00E1quina (tipo "normal"). Todas las instancias comparten la misma\r\n cinta l\u00F3gica de s\u00EDmbolos (lista est\u00E1tica); cada rueda mantiene su propia posici\u00F3n\r\n y su propia lista de s\u00EDmbolos VISUALES. Los dem\u00E1s tipos la extienden\:\r\n LeftyWheel sobrescribe spin(Wheel...), RebelWheel sobrescribe isRebel() y\r\n TiredWheel sobrescribe spin() y spin(int).\r\n
 comment1.params=wheelNumber
