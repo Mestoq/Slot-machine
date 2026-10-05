@@ -67,3 +67,33 @@ la practica de Never Add Functionality Early fue muy importante para no sobre ex
 Chacon, S., & Straub, B. (2014). Pro Git (2nd ed.). Apress. URL: https://git-scm.com/book/en/v2 Uso de Git, commits, flujo de trabajo
 
 Gemini (Google). (2026). "Debug para correcta compilacion y sintaxis en Java." proporciono análisis arquitectónico, patrones de diseño, debugging y buenas prácticas de Java.
+
+
+Ciclo 3
+
+1. ¿Cuáles fueron los mini-ciclos definidos? Justifíquenlos.
+
+    1. nosotros antes de los miniciclos como tal lo que hicimos fue un rebuild del ciclo 32 implementado las correciones hechas por el profesor, en especial cambios en la forma de resolver el problema y unos diagramas de secuencia
+    2. posteriormente lo que hicimos fue pensar en como implimentar lo que pedia el ciclo 4
+    3. planteamos como lo podriamos añadir al proyecto que ya lo teniamos, siendo la forma mas facil que encontramos usar herencias para los nuevos symbolos
+    4. hacer el nuevo diseño de astah 
+    5. hacer la implementacion a codigo. 
+    6. y finalmente si hicieron los test 
+
+2. ¿Cuál es el estado actual del proyecto en términos de mini-ciclos? ¿por qué? 
+el proyecto fue acabado en su totalidad, tuvimos algunos problemas con bugs visuales nuevamente, auqnue cabe aclarr que tuvimos problemas con el tiempo porque al final se alargo la implementacion del ciclo 4 mas de lo esperado
+3. ¿Cuál fue el tiempo total invertido por cada uno de ustedes? (Horas/Hombre)
+12 horas cada uno, mas el extra del rebuild de ciclo 3 que fueron 3 horas 
+4. ¿Cuál consideran fue el mayor logro? ¿Por qué?
+el mayor logro fue completar la implementacion de los nuevos symbolos ya que fue muy largo de hacer 
+5. ¿Cuál consideran que fue el mayor problema técnico? ¿Qué hicieron para resolverlo?
+el entendimiento de como modificar el codigo que ya teniamos sin tener que modificarlo tanto, lo que hcimos para apoyarnos fue usar el codigo que ya teniamos e implementar varios metodos privados que nos ayuden
+
+6. ¿Qué hicieron bien como equipo? ¿Qué se comprometen a hacer para mejorar los resultados?
+diriamos que la division del trabajo ya que aambos trabajamos en aspectos importantes y tambien la retroalimentacion mutua 
+7. Considerando las prácticas XP incluidas en los laboratorios. ¿cuál fue la más útil? ¿por qué?
+diriamos que la de all production code is pair programmed ya que gracias a esto ambos teniamos conocimiento del codigo y solucionaabamos provlemas que teniamos 
+8. las citas fueron
+Chacon, S., & Straub, B. (2014). Pro Git (2nd ed.). Apress. URL: https://git-scm.com/book/en/v2 Uso de Git, commits, flujo de trabajo- lo incluimos otra vez porque a veces teniamos bugs con git
+
+Gemini (Google). (2026). "Debug para correcta compilacion y sintaxis en Java." proporciono análisis arquitectónico, patrones de diseño, debugging y buenas prácticas de Java.
